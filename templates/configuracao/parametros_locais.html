@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block titulo %}Parâmetros Locais{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Parâmetros Locais</h1>
+    <p class="subtitulo">Configurações específicas por unidade</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo parâmetro</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="unidade_id">Unidade *</label>
+        <select id="unidade_id" name="unidade_id" required>
+          {% for u in unidades %}
+          <option value="{{ u.id }}">{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="chave">Chave *</label>
+        <input type="text" id="chave" name="chave" required placeholder="Ex: horario_funcionamento">
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="valor">Valor</label>
+        <input type="text" id="valor" name="valor">
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="painel">
+    <h2>Cadastrados</h2>
+    {% if parametros %}
+    <ul class="lista-simples">
+      {% for p in parametros %}
+      <li style="display:flex; justify-content:space-between;">
+        <span>{{ p.unidade_nome }} · {{ p.chave }}</span>
+        <strong>{{ p.valor or '—' }}</strong>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum parâmetro local cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Quadro Kanban{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Quadro Kanban</h1>
+    <p class="subtitulo">Ordens de serviço por status</p>
+  </div>
+</div>
+
+<div class="kanban-quadro">
+  {% for status_key in ['aberta', 'em_andamento', 'aguardando_peca', 'concluida'] %}
+  <div class="kanban-coluna">
+    <div class="kanban-coluna-titulo">
+      {{ status_labels[status_key] }} <span class="badge badge-cinza">{{ colunas[status_key]|length }}</span>
+    </div>
+    {% for os in colunas[status_key] %}
+    <a href="{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}" class="kanban-cartao">
+      <strong>{{ os.numero }}</strong>
+      <span class="texto-pequeno texto-mudo">{{ os.equipamento_nome or 'Sem equipamento' }}</span>
+      <span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[os.prioridade] }}" style="align-self:flex-start;">{{ os.prioridade }}</span>
+    </a>
+    {% else %}
+    <p class="texto-mudo texto-pequeno" style="padding:8px 0;">Vazio</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

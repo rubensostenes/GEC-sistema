@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if procedimento else 'Novo' }} Procedimento{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">📋 {{ 'Editar Procedimento' if procedimento else 'Novo Procedimento de Manutenção' }}</div>
+</div>
+
+<form method="post" class="nv-form" style="max-width:640px;">
+  <div class="nv-form-grid">
+    {% if procedimento %}
+    <div class="campo">
+      <label>Código</label>
+      <input type="text" value="{{ procedimento.codigo or '—' }}" disabled>
+    </div>
+    {% endif %}
+    <div class="campo span-2">
+      <label for="nome">Nome / Descrição</label>
+      <input type="text" id="nome" name="nome" required placeholder="Ex: Preventiva semestral - Facoemulsificador" value="{{ procedimento.nome if procedimento else '' }}">
+    </div>
+    <div class="campo span-2">
+      <label for="titulo_relatorio">Título do Relatório</label>
+      <input type="text" id="titulo_relatorio" name="titulo_relatorio" placeholder="Ex: Certificado de Manutenção Preventiva" value="{{ (procedimento.titulo_relatorio or '') if procedimento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="tipo">Tipo</label>
+      <select id="tipo" name="tipo">
+        <option value="preventiva" {{ 'selected' if not procedimento or procedimento.tipo == 'preventiva' }}>Preventiva</option>
+        <option value="calibracao" {{ 'selected' if procedimento and procedimento.tipo == 'calibracao' }}>Calibração</option>
+        <option value="inspecao" {{ 'selected' if procedimento and procedimento.tipo == 'inspecao' }}>Inspeção</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="categoria">Categoria de equipamento</label>
+      <input type="text" id="categoria" name="categoria" placeholder="Ex: Facoemulsificador" value="{{ (procedimento.categoria or '') if procedimento else '' }}">
+    </div>
+    <div class="campo">
+      <label class="checkbox">
+        <input type="checkbox" name="procedimento_generico" {{ 'checked' if procedimento and procedimento.procedimento_generico }}>
+        Procedimento genérico
+      </label>
+    </div>
+    <div class="campo">
+      <label class="checkbox">
+        <input type="checkbox" name="ativo" {{ 'checked' if not procedimento or procedimento.ativo }}>
+        Ativo
+      </label>
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">{{ 'Salvar' if procedimento else 'Criar e adicionar checklist' }}</button>
+    <a href="{{ url_for('gestao.procedimentos') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

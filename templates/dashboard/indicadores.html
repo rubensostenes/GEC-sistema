@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block titulo %}Indicadores{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Indicadores</h1>
+    <p class="subtitulo">Visão consolidada da engenharia clínica e manutenção hospitalar</p>
+  </div>
+  <a href="{{ url_for('ordens_servico.nova') }}" class="btn btn-primario">+ Nova Ordem de Serviço</a>
+</div>
+
+<div class="grid-kpi">
+  <div class="kpi">
+    <div class="valor">{{ total_equipamentos }}</div>
+    <div class="rotulo">Equipamentos ativos</div>
+  </div>
+  <div class="kpi azul">
+    <div class="valor">{{ os_abertas }}</div>
+    <div class="rotulo">Ordens de serviço abertas</div>
+  </div>
+  <div class="kpi alerta">
+    <div class="valor">{{ os_atrasadas }}</div>
+    <div class="rotulo">OS com prazo vencido</div>
+  </div>
+  <div class="kpi {{ 'alerta' if total_vencidas else 'sucesso' }}">
+    <div class="valor">{{ total_vencidas }}</div>
+    <div class="rotulo">Calibrações/preventivas vencidas</div>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <div class="painel-titulo">
+      <h2>Últimas ordens de serviço</h2>
+      <a href="{{ url_for('ordens_servico.lista') }}" class="texto-pequeno">Ver todas →</a>
+    </div>
+    {% if ultimas_os %}
+    <ul class="lista-simples">
+      {% for os in ultimas_os %}
+      <li style="display:flex; justify-content:space-between; align-items:center;">
+        <span><a href="{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}"><strong>{{ os.numero }}</strong></a> — {{ os.equipamento_nome or 'sem equipamento' }}</span>
+        <span class="badge badge-{{ {'aberta':'azul','em_andamento':'laranja','aguardando_peca':'laranja','concluida':'verde','cancelada':'cinza'}[os.status] }}">{{ os.status.replace('_',' ') }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhuma ordem de serviço registrada ainda.</p>
+    {% endif %}
+  </div>
+
+  <div class="painel">
+    <div class="painel-titulo">
+      <h2>Vencimentos próximos</h2>
+      <a href="{{ url_for('equipamentos.lista') }}" class="texto-pequeno">Ver equipamentos →</a>
+    </div>
+    {% if vencimentos %}
+    <ul class="lista-simples">
+      {% for v in vencimentos %}
+      <li style="display:flex; justify-content:space-between; align-items:center;">
+        <span><a href="{{ url_for('equipamentos.detalhe', equipamento_id=v.id) }}">{{ v.nome }}</a> <span class="texto-mudo texto-pequeno">({{ v.tipo }})</span></span>
+        <span class="badge badge-{{ 'vermelho' if v.vencida else 'laranja' }}">{{ v.data }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nada vencendo nos próximos 30 dias.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}Procedimentos de Manutenção{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📋 Procedimentos de Manutenção</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('gestao.novo_procedimento') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo Procedimento</a>
+  </div>
+
+  <form method="get" class="nv-busca-painel">
+    <div class="nv-busca-grid">
+      <div class="campo">
+        <label>Situação</label>
+        <select name="situacao" onchange="this.form.submit()">
+          <option value="ativo" {{ 'selected' if situacao == 'ativo' }}>Ativo</option>
+          <option value="inativo" {{ 'selected' if situacao == 'inativo' }}>Inativo</option>
+          <option value="todos" {{ 'selected' if situacao == 'todos' }}>Todos</option>
+        </select>
+      </div>
+    </div>
+    <div class="nv-busca-rodape">
+      <div class="nv-busca-checks">
+        <label><input type="checkbox" name="nao_publicados" value="1" {{ 'checked' if apenas_nao_publicados }} onchange="this.form.submit()"> Exibir apenas os não publicados</label>
+      </div>
+      <button type="submit" class="btn btn-secundario">🔍 Procurar</button>
+    </div>
+  </form>
+
+  {% if procedimentos %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Código</th><th>Nome</th><th>Tipo</th><th>Categoria</th><th>Versão</th><th>Situação</th><th>Itens</th></tr></thead>
+      <tbody>
+        {% for p in procedimentos %}
+        <tr onclick="window.location='{{ url_for('gestao.detalhe_procedimento', procedimento_id=p.id) }}'">
+          <td class="texto-mudo">{{ p.codigo or '—' }}</td>
+          <td><a href="{{ url_for('gestao.detalhe_procedimento', procedimento_id=p.id) }}"><strong>{{ p.nome }}</strong></a></td>
+          <td class="texto-mudo">{{ p.tipo }}</td>
+          <td class="texto-mudo">{{ p.categoria or '—' }}</td>
+          <td class="texto-mudo">v{{ p.versao }}</td>
+          <td>
+            <span class="badge badge-{{ 'verde' if p.publicado else 'laranja' }}">{{ 'Publicado' if p.publicado else 'Não publicado' }}</span>
+            {% if not p.ativo %}<span class="badge badge-cinza">Inativo</span>{% endif %}
+          </td>
+          <td>{{ p.total_itens }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum procedimento cadastrado ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ procedimentos|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

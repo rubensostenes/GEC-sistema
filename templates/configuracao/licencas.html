@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Licenças em Uso{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Licenças em Uso</h1>
+    <p class="subtitulo">Instalação local, sem limite de usuários — números apenas informativos</p>
+  </div>
+</div>
+
+<div class="grid-kpi">
+  <div class="kpi">
+    <div class="valor">{{ total_usuarios }}</div>
+    <div class="rotulo">Usuários ativos</div>
+  </div>
+</div>
+
+<div class="painel">
+  <h2>Usuários por cargo</h2>
+  <ul class="lista-simples">
+    {% for c in por_cargo %}
+    <li style="display:flex; justify-content:space-between;">
+      <span>{{ cargo_labels.get(c.cargo, c.cargo) }}</span>
+      <strong>{{ c.total }}</strong>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

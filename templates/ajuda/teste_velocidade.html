@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Teste de Velocidade{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Teste de Velocidade</h1>
+    <p class="subtitulo">Mede a resposta do servidor e do banco de dados desta instalação</p>
+  </div>
+</div>
+
+<div class="painel" style="max-width:520px;">
+  <button id="btn-testar" class="btn btn-primario">Iniciar teste</button>
+
+  <div id="resultado" style="margin-top:20px; display:none;">
+    <div class="grid-kpi" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="kpi">
+        <div class="valor" id="val-ida-volta">—</div>
+        <div class="rotulo">Ida e volta (navegador → servidor)</div>
+      </div>
+      <div class="kpi">
+        <div class="valor" id="val-banco">—</div>
+        <div class="rotulo">Consulta no banco de dados</div>
+      </div>
+    </div>
+    <p class="texto-mudo texto-pequeno" style="margin-top:14px;">
+      Como tudo roda nesta máquina (localhost), o esperado é um resultado bem baixo, poucos milissegundos.
+      Se estiver muito alto, pode indicar a máquina sobrecarregada no momento do teste.
+    </p>
+  </div>
+</div>
+
+<script>
+  document.getElementById('btn-testar').addEventListener('click', async function () {
+    const botao = this;
+    botao.disabled = true;
+    botao.textContent = 'Testando...';
+
+    const medidas = [];
+    let ultimoServidorMs = 0;
+
+    for (let i = 0; i < 5; i++) {
+      const inicio = performance.now();
+      const resp = await fetch("{{ url_for('ajuda.ping') }}");
+      const dados = await resp.json();
+      const fim = performance.now();
+      medidas.push(fim - inicio);
+      ultimoServidorMs = dados.servidor_ms;
+    }
+
+    const media = medidas.reduce((a, b) => a + b, 0) / medidas.length;
+    document.getElementById('val-ida-volta').textContent = media.toFixed(1) + ' ms';
+    document.getElementById('val-banco').textContent = ultimoServidorMs.toFixed(2) + ' ms';
+    document.getElementById('resultado').style.display = 'block';
+
+    botao.disabled = false;
+    botao.textContent = 'Testar novamente';
+  });
+</script>
+
+{% endblock %}

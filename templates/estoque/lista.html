@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}Produtos{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🔩 Produtos</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('cadastros.nova_peca') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo</a>
+  </div>
+
+  <form method="get" class="nv-busca-painel">
+    <div class="nv-busca-grid">
+      <div class="campo" style="grid-column: span 2;">
+        <label>Procurar texto</label>
+        <input type="text" name="q" value="{{ filtros.q }}" placeholder="Código ou descrição...">
+      </div>
+    </div>
+    <div class="nv-busca-rodape">
+      <span></span>
+      <button type="submit" class="btn btn-secundario">🔍 Procurar</button>
+    </div>
+  </form>
+
+  {% if pecas %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Código</th><th>Descrição</th><th>Estoque</th><th>Mínimo</th><th>Custo unitário</th><th>Fornecedor</th><th></th></tr></thead>
+      <tbody>
+        {% for p in pecas %}
+        <tr onclick="window.location='{{ url_for('cadastros.editar_peca', peca_id=p.id) }}'">
+          <td class="texto-mudo">{{ p.codigo or '—' }}</td>
+          <td><strong>{{ p.nome }}</strong></td>
+          <td>
+            {{ p.quantidade }} {{ p.unidade_medida }}
+            {% if p.quantidade <= p.quantidade_minima %}<span class="badge badge-vermelho">baixo</span>{% endif %}
+          </td>
+          <td class="texto-mudo">{{ p.quantidade_minima }}</td>
+          <td>R$ {{ '%.2f'|format(p.custo_unitario) }}</td>
+          <td class="texto-mudo">{{ p.fornecedor or '—' }}</td>
+          <td><a href="{{ url_for('cadastros.editar_peca', peca_id=p.id) }}" class="btn btn-sm btn-secundario">Editar</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma peça cadastrada no estoque.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ pecas|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

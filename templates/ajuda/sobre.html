@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block titulo %}Sobre{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Sobre o GEC</h1>
+  </div>
+</div>
+
+<div class="painel" style="max-width:600px;">
+  <p><strong>GEC — Gestão de Engenharia Clínica</strong> é um sistema local de engenharia clínica, assistência técnica, manutenção e infraestrutura hospitalar, construído sob medida para {{ nome_organizacao }}.</p>
+  <p class="texto-mudo">Combina o melhor de referências como Neovero e Arkmeds: cadastro técnico de equipamentos, ordens de serviço, estoque, indicadores e módulos de gestão administrativa — tudo rodando localmente, sem depender de servidores externos.</p>
+  <hr class="divisor">
+  <p class="texto-pequeno texto-mudo">
+    Feito com Python, Flask e SQLite.<br>
+    Todos os dados ficam nesta máquina, em <code>database/gec.db</code>.
+  </p>
+</div>
+
+{% endblock %}

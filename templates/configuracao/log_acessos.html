@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block titulo %}Log de Acessos{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🔑 Log de Acessos ao Sistema</div>
+
+  {% if acessos %}
+  <table class="nv-grid">
+    <thead><tr><th>Data/Hora</th><th>Usuário</th><th>E-mail</th><th>IP</th></tr></thead>
+    <tbody>
+      {% for a in acessos %}
+      <tr>
+        <td class="texto-mudo">{{ a.criado_em }}</td>
+        <td>{{ a.usuario_nome or '—' }}</td>
+        <td class="texto-mudo">{{ a.email or '—' }}</td>
+        <td class="texto-mudo">{{ a.ip or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum acesso registrado ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Últimos {{ acessos|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

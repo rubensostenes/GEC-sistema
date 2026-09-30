@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+database/gec.db
+static/uploads/*
+!static/uploads/.gitkeep
+.venv/
+.claude/

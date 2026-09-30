@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block titulo %}{{ equipamento.nome }}{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ equipamento.nome }} {% if equipamento.label_nome %}<span class="badge" style="background:{{ equipamento.label_cor }}22; color:{{ equipamento.label_cor }};">{{ equipamento.label_nome }}</span>{% endif %}</h1>
+    <p class="subtitulo">{{ equipamento.fabricante or '' }} {{ equipamento.modelo or '' }} · Patrimônio {{ equipamento.patrimonio or '—' }}</p>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <a href="{{ url_for('ordens_servico.nova', equipamento_id=equipamento.id) }}" class="btn btn-secundario">+ Abrir OS</a>
+    <a href="{{ url_for('equipamentos.editar', equipamento_id=equipamento.id) }}" class="btn btn-primario">Editar</a>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div>
+    <div class="painel">
+      <h2>Dados técnicos</h2>
+      <div class="form-grid">
+        <div><strong>Categoria</strong><br><span class="texto-mudo">{{ equipamento.categoria or '—' }}</span></div>
+        <div><strong>Nº de série</strong><br><span class="texto-mudo">{{ equipamento.numero_serie or '—' }}</span></div>
+        <div><strong>Registro ANVISA</strong><br><span class="texto-mudo">{{ equipamento.registro_anvisa or '—' }}</span></div>
+        <div><strong>Unidade / Setor</strong><br><span class="texto-mudo">{{ equipamento.unidade_nome or '—' }}{% if equipamento.setor_nome %} / {{ equipamento.setor_nome }}{% endif %}</span></div>
+        <div><strong>Localização</strong><br><span class="texto-mudo">{{ equipamento.localizacao or '—' }}</span></div>
+        <div><strong>Criticidade</strong><br><span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[equipamento.criticidade] }}">{{ equipamento.criticidade }}</span></div>
+        <div><strong>Status</strong><br><span class="badge badge-{{ {'ativo':'verde','em_manutencao':'laranja','inativo':'cinza','baixado':'cinza','emprestado':'azul'}[equipamento.status] }}">{{ equipamento.status.replace('_',' ') }}</span></div>
+        <div><strong>Fornecedor</strong><br><span class="texto-mudo">{{ equipamento.fornecedor or '—' }}</span></div>
+        <div><strong>Aquisição</strong><br><span class="texto-mudo">{{ equipamento.data_aquisicao or '—' }}{% if equipamento.valor_aquisicao %} · R$ {{ '%.2f'|format(equipamento.valor_aquisicao) }}{% endif %}</span></div>
+        <div><strong>Fim de garantia</strong><br><span class="texto-mudo">{{ equipamento.data_fim_garantia or '—' }}</span></div>
+      </div>
+      {% if equipamento.observacoes %}
+      <hr class="divisor">
+      <strong>Observações</strong>
+      <p class="texto-mudo">{{ equipamento.observacoes }}</p>
+      {% endif %}
+    </div>
+
+    <div class="painel">
+      <div class="painel-titulo">
+        <h2>Ordens de serviço deste equipamento</h2>
+        <a href="{{ url_for('ordens_servico.nova', equipamento_id=equipamento.id) }}" class="texto-pequeno">+ Nova OS</a>
+      </div>
+      {% if ordens %}
+      <div class="tabela-wrap">
+        <table class="tabela">
+          <thead><tr><th>Número</th><th>Tipo</th><th>Status</th><th>Técnico</th><th>Abertura</th></tr></thead>
+          <tbody>
+            {% for os in ordens %}
+            <tr>
+              <td><a href="{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}">{{ os.numero }}</a></td>
+              <td>{{ os.tipo }}</td>
+              <td><span class="badge badge-{{ {'aberta':'azul','em_andamento':'laranja','aguardando_peca':'laranja','concluida':'verde','cancelada':'cinza'}[os.status] }}">{{ os.status.replace('_',' ') }}</span></td>
+              <td>{{ os.tecnico_nome or '—' }}</td>
+              <td>{{ os.data_abertura[:10] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="vazio">Nenhuma ordem de serviço registrada para este equipamento.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="painel">
+      <h2>Foto</h2>
+      {% if equipamento.foto_path %}
+      <img class="foto-equipamento" src="{{ url_for('static', filename=equipamento.foto_path) }}" alt="Foto do equipamento">
+      {% else %}
+      <p class="texto-mudo texto-pequeno">Nenhuma foto cadastrada.</p>
+      {% endif %}
+    </div>
+
+    <div class="painel">
+      <h2>Calibração e preventiva</h2>
+      <ul class="lista-simples">
+        <li>Calibração necessária: <strong>{{ 'Sim' if equipamento.necessita_calibracao else 'Não' }}</strong></li>
+        {% if equipamento.necessita_calibracao %}
+        <li>Última calibração: {{ equipamento.data_ultima_calibracao or '—' }}</li>
+        <li>Próxima calibração:
+          {% set d = dias_ate(equipamento.data_proxima_calibracao) %}
+          <strong class="{{ 'texto-mudo' if d is none else ('badge badge-vermelho' if d < 0 else ('badge badge-laranja' if d <= 30 else 'badge badge-verde')) }}">{{ equipamento.data_proxima_calibracao or '—' }}</strong>
+        </li>
+        {% endif %}
+        <li>Última preventiva: {{ equipamento.data_ultima_preventiva or '—' }}</li>
+        <li>Próxima preventiva:
+          {% set d2 = dias_ate(equipamento.data_proxima_preventiva) %}
+          <strong class="{{ 'texto-mudo' if d2 is none else ('badge badge-vermelho' if d2 < 0 else ('badge badge-laranja' if d2 <= 30 else 'badge badge-verde')) }}">{{ equipamento.data_proxima_preventiva or '—' }}</strong>
+        </li>
+      </ul>
+    </div>
+
+    <div class="painel">
+      <h2>Anexos (manuais, certificados, laudos)</h2>
+      <form method="post" action="{{ url_for('equipamentos.anexar', equipamento_id=equipamento.id) }}" enctype="multipart/form-data" style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <select name="tipo" style="flex:1; min-width:120px;">
+          <option value="manual">Manual</option>
+          <option value="certificado">Certificado de calibração</option>
+          <option value="nota_fiscal">Nota fiscal</option>
+          <option value="outro">Outro</option>
+        </select>
+        <input type="file" name="arquivo" required style="flex:2; min-width:150px;">
+        <button type="submit" class="btn btn-sm btn-secundario">Enviar</button>
+      </form>
+      {% if anexos %}
+      <ul class="lista-simples">
+        {% for a in anexos %}
+        <li><a href="{{ url_for('static', filename=a.caminho) }}" target="_blank">{{ a.nome_arquivo }}</a> <span class="texto-mudo texto-pequeno">({{ a.tipo }})</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="texto-mudo texto-pequeno">Nenhum anexo enviado.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

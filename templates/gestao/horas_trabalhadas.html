@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block titulo %}Horas Trabalhadas{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Colaboradores — Horas Trabalhadas</h1>
+    <p class="subtitulo">Apontamento de horas por colaborador</p>
+  </div>
+  <a href="{{ url_for('gestao.colaboradores') }}" class="btn btn-secundario">← Colaboradores</a>
+</div>
+
+<div class="grid-2col">
+  <div>
+    <div class="painel">
+      <h2>Registrar horas</h2>
+      {% if colaboradores %}
+      <form method="post">
+        <div class="form-grid">
+          <div class="campo">
+            <label for="colaborador_id">Colaborador</label>
+            <select id="colaborador_id" name="colaborador_id" required>
+              {% for c in colaboradores %}
+              <option value="{{ c.id }}">{{ c.nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="campo">
+            <label for="data">Data</label>
+            <input type="date" id="data" name="data" required>
+          </div>
+          <div class="campo">
+            <label for="horas">Horas</label>
+            <input type="number" step="0.5" id="horas" name="horas" required>
+          </div>
+          <div class="campo">
+            <label for="numero_os">Nº da OS (opcional)</label>
+            <input type="text" id="numero_os" name="numero_os" placeholder="Ex: OS-2026-0001">
+          </div>
+          <div class="campo span-2">
+            <label for="observacao">Observação</label>
+            <input type="text" id="observacao" name="observacao">
+          </div>
+        </div>
+        <div class="acoes-form">
+          <button type="submit" class="btn btn-primario">Registrar</button>
+        </div>
+      </form>
+      {% else %}
+      <p class="vazio">Cadastre um colaborador antes de registrar horas.</p>
+      {% endif %}
+    </div>
+
+    <div class="painel">
+      <h2>Últimos apontamentos</h2>
+      {% if apontamentos %}
+      <div class="tabela-wrap">
+        <table class="tabela">
+          <thead><tr><th>Data</th><th>Colaborador</th><th>OS</th><th>Horas</th></tr></thead>
+          <tbody>
+            {% for a in apontamentos %}
+            <tr>
+              <td>{{ a.data }}</td>
+              <td>{{ a.colaborador_nome }}</td>
+              <td class="texto-mudo">{{ a.os_numero or '—' }}</td>
+              <td>{{ a.horas }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="vazio">Nenhum apontamento registrado ainda.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="painel">
+    <h2>Total por colaborador</h2>
+    {% if resumo %}
+    <ul class="lista-simples">
+      {% for r in resumo %}
+      <li style="display:flex; justify-content:space-between;">
+        <span>{{ r.nome }}</span>
+        <strong>{{ r.total_horas }}h</strong>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Sem dados ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

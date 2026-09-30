@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}Vincular Procedimentos a Modelos{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Vincular Procedimentos a Modelos</h1>
+    <p class="subtitulo">Associe um checklist de manutenção a um modelo de equipamento</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo vínculo</h2>
+    {% if modelos and procedimentos %}
+    <form method="post">
+      <div class="campo">
+        <label for="modelo_id">Modelo</label>
+        <select id="modelo_id" name="modelo_id" required>
+          {% for m in modelos %}
+          <option value="{{ m.id }}">{{ m.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="procedimento_id">Procedimento</label>
+        <select id="procedimento_id" name="procedimento_id" required>
+          {% for p in procedimentos %}
+          <option value="{{ p.id }}">{{ p.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Vincular</button>
+      </div>
+    </form>
+    {% elif not modelos %}
+    <p class="vazio">Cadastre um <a href="{{ url_for('ativos.modelos') }}">modelo</a> primeiro.</p>
+    {% else %}
+    <p class="vazio">Cadastre um <a href="{{ url_for('gestao.procedimentos') }}">procedimento</a> primeiro.</p>
+    {% endif %}
+  </div>
+
+  <div class="painel">
+    <h2>Vínculos existentes</h2>
+    {% if vinculos %}
+    <ul class="lista-simples">
+      {% for v in vinculos %}
+      <li style="display:flex; justify-content:space-between; align-items:center;">
+        <span>{{ v.modelo_nome }} → {{ v.procedimento_nome }}</span>
+        <form method="post" action="{{ url_for('gestao.remover_vinculo_procedimento', vinculo_id=v.id) }}">
+          <button type="submit" class="btn btn-sm btn-perigo">Remover</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum vínculo cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

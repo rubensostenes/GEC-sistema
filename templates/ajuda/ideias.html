@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block titulo %}Banco de Ideias{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Banco de Ideias</h1>
+    <p class="subtitulo">Sugestões de melhorias para o GEC</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Nova ideia</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="titulo">Título *</label>
+        <input type="text" id="titulo" name="titulo" required>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" name="descricao" placeholder="O que você gostaria que o sistema fizesse?"></textarea>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Enviar ideia</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="painel">
+    <h2>Ideias enviadas</h2>
+    {% if ideias %}
+    <ul class="lista-simples">
+      {% for i in ideias %}
+      <li>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+          <span>
+            <strong>{{ i.titulo }}</strong>
+            <span class="badge badge-{{ {'nova':'azul','em_analise':'laranja','aprovada':'verde','rejeitada':'vermelho','implementada':'verde'}[i.status] }}">{{ i.status.replace('_',' ') }}</span>
+            <br>
+            {% if i.descricao %}<span class="texto-mudo texto-pequeno">{{ i.descricao }}</span><br>{% endif %}
+            <span class="texto-mudo texto-pequeno">por {{ i.autor_nome or 'anônimo' }} · {{ i.criado_em[:10] }}</span>
+          </span>
+          <div style="text-align:center; flex-shrink:0;">
+            <form method="post" action="{{ url_for('ajuda.votar_ideia', ideia_id=i.id) }}">
+              <button type="submit" class="btn btn-sm {{ 'btn-secundario' if i.ja_votei else 'btn-primario' }}" {{ 'disabled' if i.ja_votei }}>
+                👍 {{ i.total_votos }}
+              </button>
+            </form>
+            {% if current_user.is_admin %}
+            <form method="post" action="{{ url_for('ajuda.atualizar_status_ideia', ideia_id=i.id) }}" style="margin-top:6px;">
+              <select name="status" onchange="this.form.submit()" style="font-size:0.75rem; padding:4px;">
+                <option value="nova" {{ 'selected' if i.status == 'nova' }}>Nova</option>
+                <option value="em_analise" {{ 'selected' if i.status == 'em_analise' }}>Em análise</option>
+                <option value="aprovada" {{ 'selected' if i.status == 'aprovada' }}>Aprovada</option>
+                <option value="rejeitada" {{ 'selected' if i.status == 'rejeitada' }}>Rejeitada</option>
+                <option value="implementada" {{ 'selected' if i.status == 'implementada' }}>Implementada</option>
+              </select>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhuma ideia enviada ainda. Seja o primeiro!</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

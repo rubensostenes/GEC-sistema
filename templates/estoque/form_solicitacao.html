@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block titulo %}Nova Solicitação de Compra{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">🛒 Nova Solicitação de Compra</div>
+</div>
+
+<form method="post" class="nv-form">
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label for="peca_id">Peça já cadastrada (opcional)</label>
+      <select id="peca_id" name="peca_id">
+        <option value="">— Item novo, não cadastrado —</option>
+        {% for p in pecas %}
+        <option value="{{ p.id }}">{{ p.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo span-2">
+      <label for="descricao">Descrição do item</label>
+      <input type="text" id="descricao" name="descricao" required placeholder="Ex: Lâmpada de fenda - peça reserva">
+    </div>
+    <div class="campo">
+      <label for="quantidade">Quantidade</label>
+      <input type="number" step="0.01" id="quantidade" name="quantidade" value="1">
+    </div>
+    <div class="campo span-2 alinhar-topo">
+      <label for="justificativa">Justificativa</label>
+      <textarea id="justificativa" name="justificativa"></textarea>
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Enviar solicitação</button>
+    <a href="{{ url_for('estoque.solicitacoes') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

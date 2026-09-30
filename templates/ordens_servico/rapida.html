@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}Ordem de Serviço Rápida{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Ordem de Serviço Rápida</h1>
+    <p class="subtitulo">Abertura simplificada para chamados corretivos urgentes — só o essencial</p>
+  </div>
+</div>
+
+<form method="post" class="painel" style="max-width:560px;">
+  <div class="campo">
+    <label for="equipamento_id">Equipamento</label>
+    <select id="equipamento_id" name="equipamento_id">
+      <option value="">— Não vinculado a um equipamento —</option>
+      {% for e in equipamentos %}
+      <option value="{{ e.id }}">{{ e.nome }}{% if e.patrimonio %} ({{ e.patrimonio }}){% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="campo" style="margin-top:14px;">
+    <label for="descricao_problema">O que está acontecendo? *</label>
+    <textarea id="descricao_problema" name="descricao_problema" required placeholder="Descreva rapidamente o problema"></textarea>
+  </div>
+  <p class="texto-mudo texto-pequeno">Prioridade média e tipo corretiva por padrão — ajuste depois na tela da OS, se precisar.</p>
+  <div class="acoes-form">
+    <button type="submit" class="btn btn-primario">Abrir rapidamente</button>
+    <a href="{{ url_for('ordens_servico.lista') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

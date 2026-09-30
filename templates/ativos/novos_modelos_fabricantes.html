@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block titulo %}Novos Modelos e Fabricantes{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Novos Modelos e Fabricantes</h1>
+    <p class="subtitulo">Cadastre rapidamente um fabricante ou modelo que ainda não existe no sistema</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <a href="{{ url_for('ativos.novo_fabricante') }}" class="painel" style="display:block;">
+    <h2>+ Novo Fabricante</h2>
+    <p class="texto-mudo texto-pequeno">Cadastrar uma empresa fabricante que ainda não está na lista.</p>
+  </a>
+  <a href="{{ url_for('ativos.novo_modelo') }}" class="painel" style="display:block;">
+    <h2>+ Novo Modelo</h2>
+    <p class="texto-mudo texto-pequeno">Cadastrar um modelo de equipamento vinculado a um fabricante.</p>
+  </a>
+</div>
+
+<div class="grid-2col" style="margin-top:4px;">
+  <a href="{{ url_for('ativos.fabricantes') }}" class="texto-pequeno">Ver todos os fabricantes →</a>
+  <a href="{{ url_for('ativos.modelos') }}" class="texto-pequeno">Ver todos os modelos →</a>
+</div>
+
+{% endblock %}

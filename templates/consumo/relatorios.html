@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titulo %}Relatórios de Consumo{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Relatórios de Consumo</h1>
+    <p class="subtitulo">Consumo realizado comparado à meta, por período</p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if comparativo %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Tabela</th><th>Período</th><th>Realizado</th><th>Meta</th><th>Diferença</th></tr></thead>
+      <tbody>
+        {% for c in comparativo %}
+        <tr>
+          <td>{{ c.tabela_nome }}</td>
+          <td class="texto-mudo">{{ c.periodo }}</td>
+          <td>{{ c.realizado }} {{ c.unidade_medida }}</td>
+          <td class="texto-mudo">{{ c.valor_meta if c.valor_meta is not none else '—' }}</td>
+          <td>
+            {% if c.valor_meta is not none %}
+            {% set diff = c.realizado - c.valor_meta %}
+            <span class="{{ 'badge badge-vermelho' if diff > 0 else 'badge badge-verde' }}">{{ diff }}</span>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhuma informação de consumo registrada ainda.</p>
+  {% endif %}
+</div>
+
+<div class="painel">
+  <h2>Ver também</h2>
+  <a href="{{ url_for('financeiro.consumo') }}" class="texto-pequeno">Consumo de peças usadas em ordens de serviço →</a>
+</div>
+
+{% endblock %}

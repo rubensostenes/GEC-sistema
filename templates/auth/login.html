@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar · GEC</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="pagina-auth">
+  <div class="cartao-auth">
+    <div class="cabecalho">
+      <div class="selo">GEC</div>
+      <h1>Gestão de Engenharia Clínica</h1>
+      <p>{{ nome_organizacao }}</p>
+    </div>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+      <div class="flashes">
+        {% for categoria, mensagem in mensagens %}
+          <div class="flash flash-{{ categoria }}">{{ mensagem }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post">
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required autofocus>
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" required>
+      </div>
+      <label class="checkbox">
+        <input type="checkbox" name="lembrar"> Manter conectado
+      </label>
+      <button type="submit" class="btn btn-primario" style="justify-content:center;">Entrar</button>
+    </form>
+
+    <div class="rodape">
+      Primeiro acesso? <a href="{{ url_for('auth.registrar') }}">Criar usuário administrador</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

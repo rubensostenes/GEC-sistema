@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if colaborador else 'Novo' }} Colaborador{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">👤 {{ 'Editar Colaborador' if colaborador else 'Novo Colaborador' }}</div>
+</div>
+
+<form method="post" class="nv-form" style="max-width:720px;">
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required value="{{ colaborador.nome if colaborador else '' }}">
+    </div>
+    <div class="campo">
+      <label for="funcao">Função</label>
+      <input type="text" id="funcao" name="funcao" placeholder="Ex: Técnico, Auxiliar, Terceirizado" value="{{ colaborador.funcao if colaborador else '' }}">
+    </div>
+    <div class="campo">
+      <label for="unidade_id">Unidade</label>
+      <select id="unidade_id" name="unidade_id">
+        <option value="">—</option>
+        {% for u in unidades %}
+        <option value="{{ u.id }}" {{ 'selected' if colaborador and colaborador.unidade_id == u.id }}>{{ u.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone</label>
+      <input type="text" id="telefone" name="telefone" value="{{ colaborador.telefone if colaborador else '' }}">
+    </div>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" value="{{ colaborador.email if colaborador else '' }}">
+    </div>
+    <div class="campo">
+      <label for="carga_horaria_semanal">Carga horária semanal (h)</label>
+      <input type="number" step="0.5" id="carga_horaria_semanal" name="carga_horaria_semanal" value="{{ colaborador.carga_horaria_semanal if colaborador else '' }}">
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{{ url_for('gestao.colaboradores') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

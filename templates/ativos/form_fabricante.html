@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block titulo %}Novo Fabricante{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">🏷 Novo Fabricante</div>
+</div>
+
+<form method="post" class="nv-form" style="max-width:560px;">
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required>
+    </div>
+    <div class="campo">
+      <label for="site">Site</label>
+      <input type="text" id="site" name="site">
+    </div>
+    <div class="campo">
+      <label for="contato">Contato</label>
+      <input type="text" id="contato" name="contato">
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone</label>
+      <input type="text" id="telefone" name="telefone">
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{{ url_for('ativos.fabricantes') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

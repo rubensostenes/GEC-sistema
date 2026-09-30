@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Nova Reserva{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">📅 Nova Reserva de Equipamento</div>
+</div>
+
+<form method="post" class="nv-form">
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label for="equipamento_id">Equipamento</label>
+      <select id="equipamento_id" name="equipamento_id" required>
+        {% for e in equipamentos %}
+        <option value="{{ e.id }}">{{ e.nome }}{% if e.patrimonio %} ({{ e.patrimonio }}){% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo span-2">
+      <label for="solicitante">Solicitante</label>
+      <input type="text" id="solicitante" name="solicitante" required>
+    </div>
+    <div class="campo">
+      <label for="data_inicio">Início</label>
+      <input type="date" id="data_inicio" name="data_inicio" required>
+    </div>
+    <div class="campo">
+      <label for="data_fim">Fim previsto</label>
+      <input type="date" id="data_fim" name="data_fim" required>
+    </div>
+    <div class="campo span-2 alinhar-topo">
+      <label for="observacao">Observação</label>
+      <textarea id="observacao" name="observacao"></textarea>
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Registrar reserva</button>
+    <a href="{{ url_for('ativos.reservas') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

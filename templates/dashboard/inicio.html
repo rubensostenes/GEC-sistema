@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Painel{% endblock %}
+{% block conteudo %}
+
+<div class="nv-boas-vindas">
+  <h1>Olá, {{ current_user.nome.split(' ')[0] }}</h1>
+  <p class="subtitulo">{{ nome_organizacao }} — use os atalhos ao lado para buscar um equipamento, uma OS, ou acompanhar suas ordens de serviço.</p>
+  <div class="nv-acoes-rapidas">
+    <a href="{{ url_for('ordens_servico.nova') }}" class="btn btn-primario">+ Nova Ordem de Serviço</a>
+    <a href="{{ url_for('equipamentos.novo') }}" class="btn btn-secundario">+ Novo Equipamento</a>
+    <a href="{{ url_for('dashboard.indicadores') }}" class="btn btn-secundario">Ver Indicadores</a>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{
+  "name": "gec-firestore-poc-vercel",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Mesmo protótipo do netlify-firestore-poc, adaptado para rodar na Vercel.",
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block titulo %}Contratos de Manutenção{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📝 Contratos de Manutenção</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('gestao.novo_contrato') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo Contrato</a>
+    <a href="{{ url_for('gestao.contratos') }}" class="nv-toolbar-btn" style="{{ 'font-weight:800;' if not filtro }}"><span class="icone">📋</span> Todos ativos</a>
+    <a href="{{ url_for('gestao.contratos', filtro='a_vencer') }}" class="nv-toolbar-btn" style="{{ 'font-weight:800;' if filtro == 'a_vencer' }}"><span class="icone">⏳</span> A vencer (30 dias)</a>
+    <a href="{{ url_for('gestao.contratos', filtro='vencidos') }}" class="nv-toolbar-btn" style="{{ 'font-weight:800;' if filtro == 'vencidos' }}"><span class="icone">⚠</span> Vencidos</a>
+  </div>
+
+  {% if contratos %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Descrição</th><th>Fornecedor</th><th>Vínculo</th><th>Início</th><th>Fim</th><th>Valor</th><th></th></tr></thead>
+      <tbody>
+        {% for c in contratos %}
+        <tr>
+          <td><strong>{{ c.descricao }}</strong><br><span class="texto-mudo">{{ c.tipo_servico or '' }}</span></td>
+          <td>{{ c.fornecedor_nome or '—' }}</td>
+          <td class="texto-mudo">{{ c.equipamento_nome or c.unidade_nome or '—' }}</td>
+          <td class="texto-mudo">{{ c.data_inicio or '—' }}</td>
+          <td>
+            {% if c.data_fim and c.data_fim < hoje %}<span class="badge badge-vermelho">{{ c.data_fim }}</span>
+            {% else %}{{ c.data_fim or '—' }}{% endif %}
+          </td>
+          <td>{{ 'R$ %.2f'|format(c.valor) if c.valor else '—' }}</td>
+          <td onclick="event.stopPropagation();">
+            <form method="post" action="{{ url_for('gestao.encerrar_contrato', contrato_id=c.id) }}" onsubmit="return confirm('Encerrar este contrato?');">
+              <button type="submit" class="btn btn-sm btn-secundario">Encerrar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum contrato encontrado.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ contratos|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

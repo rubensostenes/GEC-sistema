@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if peca else 'Nova' }} Peça{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">🔧 {{ 'Editar Peça' if peca else 'Nova Peça' }}</div>
+</div>
+
+<form method="post" class="nv-form" style="max-width:720px;">
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required value="{{ peca.nome if peca else '' }}">
+    </div>
+    <div class="campo">
+      <label for="codigo">Código interno</label>
+      <input type="text" id="codigo" name="codigo" value="{{ peca.codigo if peca else '' }}">
+    </div>
+    <div class="campo">
+      <label for="unidade_medida">Unidade de medida</label>
+      <input type="text" id="unidade_medida" name="unidade_medida" value="{{ peca.unidade_medida if peca else 'un' }}">
+    </div>
+    <div class="campo">
+      <label for="quantidade">Quantidade em estoque</label>
+      <input type="number" step="0.01" id="quantidade" name="quantidade" value="{{ peca.quantidade if peca else 0 }}">
+    </div>
+    <div class="campo">
+      <label for="quantidade_minima">Quantidade mínima (alerta)</label>
+      <input type="number" step="0.01" id="quantidade_minima" name="quantidade_minima" value="{{ peca.quantidade_minima if peca else 0 }}">
+    </div>
+    <div class="campo">
+      <label for="custo_unitario">Custo unitário (R$)</label>
+      <input type="number" step="0.01" id="custo_unitario" name="custo_unitario" value="{{ peca.custo_unitario if peca else 0 }}">
+    </div>
+    <div class="campo">
+      <label for="fornecedor">Fornecedor</label>
+      <input type="text" id="fornecedor" name="fornecedor" value="{{ peca.fornecedor if peca else '' }}">
+    </div>
+    <div class="campo">
+      <label for="localizacao">Localização no almoxarifado</label>
+      <input type="text" id="localizacao" name="localizacao" value="{{ peca.localizacao if peca else '' }}">
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{{ url_for('cadastros.estoque') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

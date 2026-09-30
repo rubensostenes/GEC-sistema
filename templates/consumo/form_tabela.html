@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}Nova Tabela de Acompanhamento{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">📊 Nova Tabela de Acompanhamento de Consumo</div>
+</div>
+
+<form method="post" class="nv-form">
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required placeholder="Ex: Energia Elétrica - Iputinga">
+    </div>
+    <div class="campo">
+      <label for="grupo_id">Grupo</label>
+      <select id="grupo_id" name="grupo_id">
+        <option value="">—</option>
+        {% for g in grupos %}
+        <option value="{{ g.id }}">{{ g.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="unidade_id">Unidade (local)</label>
+      <select id="unidade_id" name="unidade_id">
+        <option value="">—</option>
+        {% for u in unidades %}
+        <option value="{{ u.id }}">{{ u.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="unidade_medida">Unidade de medida</label>
+      <input type="text" id="unidade_medida" name="unidade_medida" value="un" placeholder="Ex: kWh, m³, L">
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{{ url_for('consumo.tabelas') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

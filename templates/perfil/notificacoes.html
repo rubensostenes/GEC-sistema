@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}Notificações{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Configurações de Notificações</h1>
+    <p class="subtitulo">Suas preferências — o envio por e-mail depende de configuração de servidor ainda não feita nesta instalação</p>
+  </div>
+</div>
+
+<form method="post" class="painel" style="max-width:480px;">
+  <label class="checkbox">
+    <input type="checkbox" name="email_os_atribuida" {{ 'checked' if not prefs or prefs.email_os_atribuida }}>
+    Avisar quando uma OS for atribuída a mim
+  </label>
+  <label class="checkbox" style="margin-top:10px;">
+    <input type="checkbox" name="email_calibracao_vencendo" {{ 'checked' if not prefs or prefs.email_calibracao_vencendo }}>
+    Avisar sobre calibrações/preventivas vencendo
+  </label>
+  <label class="checkbox" style="margin-top:10px;">
+    <input type="checkbox" name="email_alerta_geral" {{ 'checked' if not prefs or prefs.email_alerta_geral }}>
+    Avisar sobre alertas gerais do sistema
+  </label>
+  <div class="acoes-form">
+    <button type="submit" class="btn btn-primario">Salvar preferências</button>
+  </div>
+</form>
+
+{% endblock %}

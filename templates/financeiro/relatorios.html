@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Relatórios Financeiros{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Relatórios Financeiros</h1>
+    <p class="subtitulo">Indicadores de custo e exportações</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <a href="{{ url_for('financeiro.resumo') }}" class="painel" style="display:block;">
+    <h2>Resumo de Custos</h2>
+    <p class="texto-mudo texto-pequeno">Gasto do mês, acumulado, maiores custos por OS e custo por unidade.</p>
+  </a>
+  <a href="{{ url_for('financeiro.consumo') }}" class="painel" style="display:block;">
+    <h2>Consumo de Peças em OS</h2>
+    <p class="texto-mudo texto-pequeno">Histórico de peças utilizadas nas ordens de serviço.</p>
+  </a>
+  <a href="{{ url_for('gestao.exportar_equipamentos_csv') }}" class="painel" style="display:block;">
+    <h2>Exportar Equipamentos (CSV)</h2>
+    <p class="texto-mudo texto-pequeno">Ficha técnica completa do parque.</p>
+  </a>
+  <a href="{{ url_for('gestao.exportar_os_csv') }}" class="painel" style="display:block;">
+    <h2>Exportar Ordens de Serviço (CSV)</h2>
+    <p class="texto-mudo texto-pequeno">Histórico completo de OS, custos e tempos.</p>
+  </a>
+</div>
+
+{% endblock %}

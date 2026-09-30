@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block titulo %}Unidades{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Unidades</h1>
+    <p class="subtitulo">Filiais, hospitais e polos atendidos pela engenharia clínica</p>
+  </div>
+  {% if current_user.is_admin %}
+  <a href="{{ url_for('cadastros.nova_unidade') }}" class="btn btn-primario">+ Nova Unidade</a>
+  {% endif %}
+</div>
+
+<div class="painel">
+  {% if unidades %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Nome</th><th>Endereço</th><th>Equipamentos</th><th>Setores</th></tr></thead>
+      <tbody>
+        {% for u in unidades %}
+        <tr>
+          <td><strong>{{ u.nome }}</strong></td>
+          <td class="texto-mudo">{{ u.endereco or '—' }}</td>
+          <td>{{ u.total_equipamentos }}</td>
+          <td><a href="{{ url_for('cadastros.setores', unidade_id=u.id) }}">Gerenciar setores →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhuma unidade cadastrada ainda.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

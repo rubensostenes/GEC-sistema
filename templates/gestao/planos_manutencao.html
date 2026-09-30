@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}Planos de Manutenção{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📅 Planos de Manutenção</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('gestao.novo_plano_manutencao') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo Plano</a>
+    <a href="{{ url_for('gestao.cronograma_planos') }}" class="nv-toolbar-btn"><span class="icone">📆</span> Cronograma</a>
+    <a href="{{ url_for('gestao.exportar_planos_csv') }}" class="nv-toolbar-btn"><span class="icone">📤</span> Exportar</a>
+  </div>
+
+  <form method="get" class="nv-busca-painel">
+    <div class="nv-busca-grid">
+      <div class="campo" style="grid-column: span 2;">
+        <label>Nome do plano</label>
+        <input type="text" name="q" value="{{ termo }}" placeholder="Buscar...">
+      </div>
+    </div>
+    <div class="nv-busca-rodape">
+      <span></span>
+      <button type="submit" class="btn btn-secundario">🔍 Procurar</button>
+    </div>
+  </form>
+
+  <div class="nv-grid-rodape" style="border-top:none;">
+    <div></div>
+    <div>Total: {{ total }}</div>
+  </div>
+</div>
+
+{% if agrupado %}
+{% for oficina, planos in agrupado.items() %}
+<div class="nv-janela">
+  <div class="nv-janela-titulo">{{ oficina }} <span class="texto-mudo" style="font-weight:400; margin-left:6px;">({{ planos|length }})</span></div>
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Nome</th><th>Procedimento</th><th>Periodicidade</th><th>Tipo</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for p in planos %}
+        <tr onclick="window.location='{{ url_for('gestao.editar_plano_manutencao', plano_id=p.id) }}'">
+          <td><a href="{{ url_for('gestao.editar_plano_manutencao', plano_id=p.id) }}"><strong>{{ p.nome }}</strong></a></td>
+          <td class="texto-mudo">{{ p.procedimento_nome or '—' }}</td>
+          <td>{{ p.periodicidade_meses }} meses</td>
+          <td class="texto-mudo">{{ tipo_labels.get(p.tipo_manutencao, p.tipo_manutencao) }}</td>
+          <td>
+            {% if p.pausado %}<span class="badge badge-laranja">Pausado</span>
+            {% elif p.ativo %}<span class="badge badge-verde">Ativo</span>
+            {% else %}<span class="badge badge-cinza">Inativo</span>{% endif %}
+          </td>
+          <td style="display:flex; gap:6px;" onclick="event.stopPropagation();">
+            <form method="post" action="{{ url_for('gestao.duplicar_plano_manutencao', plano_id=p.id) }}">
+              <button type="submit" class="btn btn-sm btn-secundario">Duplicar</button>
+            </form>
+            <form method="post" action="{{ url_for('gestao.excluir_plano_manutencao', plano_id=p.id) }}" onsubmit="return confirm('Excluir este plano?');">
+              <button type="submit" class="btn btn-sm btn-perigo">Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="nv-janela"><p class="vazio" style="padding:20px;">Nenhum plano de manutenção cadastrado ainda.</p></div>
+{% endif %}
+
+{% endblock %}

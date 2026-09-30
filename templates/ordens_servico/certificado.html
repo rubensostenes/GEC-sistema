@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>{{ titulo }} — OS {{ ordem.numero }}</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; max-width: 820px; margin: 40px auto; padding: 0 20px; }
+  header { text-align: center; border-bottom: 3px solid #1a4d8f; padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { font-size: 20px; margin: 0 0 4px; color: #1a4d8f; }
+  header p { margin: 2px 0; color: #555; font-size: 13px; }
+  h2.titulo-certificado { text-align: center; font-size: 17px; margin: 20px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+  table.dados { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  table.dados td { padding: 6px 8px; border: 1px solid #ccc; font-size: 13px; vertical-align: top; }
+  table.dados td.rotulo { background: #f2f4f7; font-weight: bold; width: 180px; }
+  table.checklist { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  table.checklist th, table.checklist td { border: 1px solid #ccc; padding: 6px 8px; font-size: 13px; text-align: left; }
+  table.checklist th { background: #f2f4f7; }
+  .ok { color: #167a3c; font-weight: bold; }
+  .pendente { color: #b3540a; }
+  .assinaturas { display: flex; justify-content: space-between; margin-top: 60px; }
+  .assinaturas div { width: 45%; text-align: center; border-top: 1px solid #333; padding-top: 6px; font-size: 12px; }
+  footer { margin-top: 40px; font-size: 11px; color: #888; text-align: center; }
+  .acoes-impressao { text-align: center; margin-bottom: 20px; }
+  @media print {
+    .acoes-impressao { display: none; }
+    body { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="acoes-impressao">
+  <button onclick="window.print()">Imprimir / salvar como PDF</button>
+</div>
+
+<header>
+  <h1>{{ nome_organizacao }}</h1>
+  <p>Engenharia Clínica</p>
+</header>
+
+<h2 class="titulo-certificado">{{ titulo }}</h2>
+
+<table class="dados">
+  <tr><td class="rotulo">Ordem de Serviço</td><td>{{ ordem.numero }}</td></tr>
+  {% if ordem.certificado_numero %}
+  <tr><td class="rotulo">Nº do Certificado</td><td>{{ ordem.certificado_numero }}</td></tr>
+  <tr><td class="rotulo">Situação</td><td class="{{ 'ok' if ordem.certificado_situacao == 'aprovado' else 'pendente' }}">{{ 'APROVADO' if ordem.certificado_situacao == 'aprovado' else 'NÃO APROVADO' }}</td></tr>
+  {% if ordem.certificado_validade %}<tr><td class="rotulo">Validade</td><td>{{ ordem.certificado_validade }}</td></tr>{% endif %}
+  {% endif %}
+  <tr><td class="rotulo">Tipo</td><td>{{ tipo_labels.get(ordem.tipo, ordem.tipo) }}</td></tr>
+  <tr><td class="rotulo">Equipamento</td><td>{{ ordem.equipamento_nome or '—' }}</td></tr>
+  <tr><td class="rotulo">Fabricante / Modelo</td><td>{{ ordem.fabricante or '—' }} {% if ordem.modelo %}/ {{ ordem.modelo }}{% endif %}</td></tr>
+  <tr><td class="rotulo">TAG / Patrimônio</td><td>{{ ordem.tag or '—' }} {% if ordem.patrimonio %}/ {{ ordem.patrimonio }}{% endif %}</td></tr>
+  <tr><td class="rotulo">Nº de Série</td><td>{{ ordem.numero_serie or '—' }}</td></tr>
+  <tr><td class="rotulo">Unidade / Setor</td><td>{{ ordem.unidade_nome or '—' }} {% if ordem.setor_nome %}/ {{ ordem.setor_nome }}{% endif %}</td></tr>
+  <tr><td class="rotulo">Técnico responsável</td><td>{{ ordem.tecnico_nome or '—' }}</td></tr>
+  <tr><td class="rotulo">Data de abertura</td><td>{{ ordem.data_abertura }}</td></tr>
+  <tr><td class="rotulo">Data de conclusão</td><td>{{ ordem.data_conclusao or '—' }}</td></tr>
+</table>
+
+{% if ordem.solucao %}
+<p><strong>Serviço executado:</strong> {{ ordem.solucao }}</p>
+{% endif %}
+
+{% if checklist %}
+<h3>Checklist de verificação</h3>
+<table class="checklist">
+  <thead><tr><th>Item</th><th>Resultado</th></tr></thead>
+  <tbody>
+    {% for item in checklist %}
+    <tr>
+      <td>{{ item.descricao }}</td>
+      <td>{% if item.concluido %}<span class="ok">Conforme</span>{% else %}<span class="pendente">Não verificado</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<div class="assinaturas">
+  <div>Técnico responsável</div>
+  <div>Engenharia Clínica — {{ nome_organizacao }}</div>
+</div>
+
+<footer>
+  Documento gerado pelo GEC — Gestão de Engenharia Clínica, a partir dos dados da Ordem de Serviço {{ ordem.numero }}.
+</footer>
+
+</body>
+</html>

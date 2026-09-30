@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Grupos de Tabelas de Acompanhamento{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Grupos de Tabelas de Acompanhamento de Consumo</h1>
+    <p class="subtitulo">Agrupe as tabelas de consumo por tipo (ex: Energia, Gases medicinais, Água)</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo grupo</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="nome">Nome *</label>
+        <input type="text" id="nome" name="nome" required placeholder="Ex: Gases medicinais">
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" name="descricao"></textarea>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="painel">
+    <h2>Grupos cadastrados</h2>
+    {% if grupos %}
+    <ul class="lista-simples">
+      {% for g in grupos %}
+      <li style="display:flex; justify-content:space-between;">
+        <span>{{ g.nome }}</span>
+        <span class="texto-mudo texto-pequeno">{{ g.total_tabelas }} tabela(s)</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum grupo cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

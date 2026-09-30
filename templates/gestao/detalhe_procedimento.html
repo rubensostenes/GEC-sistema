@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block titulo %}{{ procedimento.nome }}{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ procedimento.codigo }} — {{ procedimento.nome }}</h1>
+    <p class="subtitulo">
+      {{ procedimento.tipo }}{% if procedimento.categoria %} · {{ procedimento.categoria }}{% endif %}
+      · v{{ procedimento.versao }}
+      <span class="badge badge-{{ 'verde' if procedimento.publicado else 'laranja' }}">{{ 'Publicado' if procedimento.publicado else 'Não publicado' }}</span>
+      {% if not procedimento.ativo %}<span class="badge badge-cinza">Inativo</span>{% endif %}
+    </p>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <a href="{{ url_for('gestao.editar_procedimento', procedimento_id=procedimento.id) }}" class="btn btn-secundario">Alterar</a>
+    <form method="post" action="{{ url_for('gestao.duplicar_procedimento', procedimento_id=procedimento.id) }}">
+      <button type="submit" class="btn btn-secundario">Duplicar</button>
+    </form>
+    {% if not procedimento.publicado %}
+    <form method="post" action="{{ url_for('gestao.publicar_procedimento', procedimento_id=procedimento.id) }}">
+      <button type="submit" class="btn btn-primario">Publicar</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="painel">
+  <h2>Blocos de verificação</h2>
+  {% if blocos %}
+  {% for bloco in blocos %}
+  <div class="painel" style="background:var(--fundo-2, rgba(255,255,255,0.03)); margin-bottom:14px;">
+    <h3>{{ bloco.ordem }} - {{ bloco.descricao }}{% if bloco.calibra_componente %} <span class="badge badge-azul">Calibra componente</span>{% endif %}</h3>
+    {% if bloco.instrucoes_gerais %}<p class="texto-mudo texto-pequeno">{{ bloco.instrucoes_gerais }}</p>{% endif %}
+    {% set itens = itens_por_bloco.get(bloco.id, []) %}
+    {% if itens %}
+    <ol class="lista-simples" style="padding-left:18px;">
+      {% for i in itens %}
+      <li style="list-style: decimal; {{ 'opacity:0.5;' if not i.ativo }}">{{ i.descricao }}</li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="texto-mudo texto-pequeno">Nenhum item de checklist neste bloco ainda.</p>
+    {% endif %}
+    <form method="post" action="{{ url_for('gestao.adicionar_item_procedimento', procedimento_id=procedimento.id, bloco_id=bloco.id) }}" style="display:flex; gap:8px; margin-top:10px;">
+      <input type="text" name="descricao" required placeholder="Ex: Verificar calibração do sensor de pressão" style="flex:1;">
+      <button type="submit" class="btn btn-sm btn-primario">+ Item</button>
+    </form>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p class="vazio">Nenhum bloco de verificação cadastrado ainda.</p>
+  {% endif %}
+
+  {% if itens_sem_bloco %}
+  <h3>Itens sem bloco</h3>
+  <ol class="lista-simples" style="padding-left:18px;">
+    {% for i in itens_sem_bloco %}
+    <li style="list-style: decimal;">{{ i.descricao }}</li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+
+  <hr class="divisor">
+  <h3>Adicionar bloco de verificação</h3>
+  <form method="post" action="{{ url_for('gestao.adicionar_bloco_procedimento', procedimento_id=procedimento.id) }}" class="form-grid">
+    <div class="campo span-2">
+      <label for="descricao">Descrição *</label>
+      <input type="text" id="descricao" name="descricao" required placeholder="Ex: VERIFICAÇÕES GERAIS">
+    </div>
+    <div class="campo">
+      <label class="checkbox" style="margin-top:22px;">
+        <input type="checkbox" name="calibra_componente">
+        Calibra componente
+      </label>
+    </div>
+    <div class="campo span-2">
+      <label for="instrucoes_gerais">Instruções gerais do checklist</label>
+      <textarea id="instrucoes_gerais" name="instrucoes_gerais"></textarea>
+    </div>
+    <div class="campo span-2">
+      <button type="submit" class="btn btn-sm btn-primario">Adicionar bloco</button>
+    </div>
+  </form>
+</div>
+
+<div class="painel">
+  <p class="texto-mudo texto-pequeno">Para usar este checklist em equipamentos, vincule-o a um modelo em <a href="{{ url_for('gestao.vincular_procedimentos') }}">Vincular Procedimentos a Modelos</a>.</p>
+</div>
+
+{% endblock %}

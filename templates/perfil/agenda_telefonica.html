@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Agenda Telefônica{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Agenda Telefônica</h1>
+    <p class="subtitulo">Contatos de usuários do sistema e colaboradores</p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if contatos %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Nome</th><th>Função/Cargo</th><th>Telefone</th><th>E-mail</th><th>Origem</th></tr></thead>
+      <tbody>
+        {% for c in contatos %}
+        <tr>
+          <td><strong>{{ c.nome }}</strong></td>
+          <td class="texto-mudo">{{ c.cargo or '—' }}</td>
+          <td class="texto-mudo">{{ c.telefone or '—' }}</td>
+          <td class="texto-mudo">{{ c.email or '—' }}</td>
+          <td><span class="badge badge-cinza">{{ c.origem }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhum contato cadastrado ainda.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Documentação{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Documentação Técnica</h1>
+    <p class="subtitulo">Visão geral de como o GEC é construído</p>
+  </div>
+</div>
+
+<div class="grid-kpi">
+  <div class="kpi">
+    <div class="valor">{{ total_tabelas }}</div>
+    <div class="rotulo">Tabelas no banco de dados</div>
+  </div>
+</div>
+
+<div class="painel">
+  <h2>Arquitetura</h2>
+  <ul class="lista-simples">
+    <li><strong>Back-end:</strong> Python + Flask, rodando localmente nesta máquina (sem dependência de internet depois de instalado).</li>
+    <li><strong>Banco de dados:</strong> SQLite, um único arquivo em <code>database/gec.db</code>.</li>
+    <li><strong>Front-end:</strong> HTML + CSS + um pouco de JavaScript, sem frameworks pesados — carrega rápido mesmo em máquinas simples.</li>
+    <li><strong>Autenticação:</strong> login por e-mail/senha, com controle de cargo (admin, gestor, técnico, solicitante).</li>
+  </ul>
+</div>
+
+<div class="painel">
+  <h2>Módulos (blueprints)</h2>
+  <ul class="lista-simples">
+    <li><strong>equipamentos / ativos:</strong> cadastro técnico, fabricantes, modelos, reservas, transporte, contadores.</li>
+    <li><strong>ordens_servico:</strong> todo o ciclo de vida de uma OS, do abrir ao assinar.</li>
+    <li><strong>estoque:</strong> compras, entradas, baixas, inventário.</li>
+    <li><strong>gestao:</strong> indicadores, fornecedores, contratos, colaboradores, procedimentos, sensores.</li>
+    <li><strong>financeiro / consumo:</strong> custos e acompanhamento de consumo.</li>
+    <li><strong>configuracao:</strong> parâmetros administrativos e auditoria.</li>
+    <li><strong>perfil / auth:</strong> conta do usuário e controle de acesso.</li>
+  </ul>
+</div>
+
+<div class="painel">
+  <h2>Onde encontrar mais</h2>
+  <p class="texto-mudo">O <a href="{{ url_for('ajuda.manual') }}">Manual do Usuário</a> explica como usar cada tela. Este espaço é mais voltado para quem for mexer no código do sistema no futuro.</p>
+</div>
+
+{% endblock %}

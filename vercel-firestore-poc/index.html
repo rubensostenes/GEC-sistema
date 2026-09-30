@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>GEC — Unidades (protótipo Firestore direto do navegador)</title>
+<style>
+  body { font-family: Segoe UI, Arial, sans-serif; background: #eef1f5; margin: 0; padding: 24px; }
+  h1 { font-size: 1.1rem; color: #1f4e79; }
+  .aviso { background: #fff3cd; border: 1px solid #f0c36d; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; font-size: 0.85rem; }
+  table { border-collapse: collapse; width: 100%; max-width: 640px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e2e5ea; font-size: 0.9rem; }
+  th { background: #dce6f1; color: #1f4e79; }
+  form { margin-top: 16px; display: flex; gap: 8px; }
+  input { padding: 6px 8px; border: 1px solid #c9ced6; border-radius: 3px; }
+  button { background: #1f4e79; color: #fff; border: none; padding: 6px 14px; border-radius: 3px; cursor: pointer; }
+</style>
+</head>
+<body>
+  <h1>🏥 Unidades — protótipo Firestore direto do navegador</h1>
+  <p class="aviso">Tela isolada, só para comparar com a versão Flask/SQL do GEC. Fala direto com o Firestore, sem servidor no meio.</p>
+
+  <table>
+    <thead><tr><th>Nome</th><th>Endereço</th></tr></thead>
+    <tbody id="linhas"><tr><td colspan="2">Carregando...</td></tr></tbody>
+  </table>
+
+  <form id="form-nova">
+    <input type="text" id="nome" placeholder="Nome da unidade" required>
+    <input type="text" id="endereco" placeholder="Endereço">
+    <button type="submit">Salvar</button>
+  </form>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp,
+  } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+  import { firebaseConfig } from "./firebase-config.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const unidadesRef = collection(db, "unidades");
+
+  async function carregar() {
+    const corpo = document.getElementById("linhas");
+    const snap = await getDocs(query(unidadesRef, orderBy("nome")));
+    if (snap.empty) {
+      corpo.innerHTML = "<tr><td colspan=2>Nenhuma unidade cadastrada.</td></tr>";
+      return;
+    }
+    corpo.innerHTML = snap.docs
+      .map((doc) => {
+        const u = doc.data();
+        return `<tr><td>${u.nome}</td><td>${u.endereco || ""}</td></tr>`;
+      })
+      .join("");
+  }
+
+  document.getElementById("form-nova").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const nome = document.getElementById("nome").value.trim();
+    const endereco = document.getElementById("endereco").value.trim();
+    if (!nome) return;
+    await addDoc(unidadesRef, { nome, endereco, ativo: true, criado_em: serverTimestamp() });
+    document.getElementById("form-nova").reset();
+    carregar();
+  });
+
+  carregar();
+</script>
+</body>
+</html>

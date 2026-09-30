@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}Solicitações de Compra{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🛒 Solicitações de Compra</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('estoque.nova_solicitacao') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Nova Solicitação</a>
+  </div>
+
+  {% if solicitacoes %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Descrição</th><th>Qtd.</th><th>Solicitante</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for s in solicitacoes %}
+        <tr>
+          <td><strong>{{ s.peca_nome or s.descricao }}</strong>{% if s.justificativa %}<br><span class="texto-pequeno texto-mudo">{{ s.justificativa }}</span>{% endif %}</td>
+          <td>{{ s.quantidade }}</td>
+          <td class="texto-mudo">{{ s.solicitante_nome or '—' }}</td>
+          <td>
+            <span class="badge badge-{{ {'pendente':'laranja','aprovada':'azul','rejeitada':'vermelho','comprada':'verde'}[s.status] }}">{{ s.status }}</span>
+          </td>
+          <td>
+            {% if s.status == 'pendente' %}
+            <form method="post" action="{{ url_for('estoque.atualizar_status_solicitacao', solicitacao_id=s.id) }}" style="display:inline;">
+              <input type="hidden" name="status" value="aprovada">
+              <button type="submit" class="btn btn-sm btn-sucesso">Aprovar</button>
+            </form>
+            <form method="post" action="{{ url_for('estoque.atualizar_status_solicitacao', solicitacao_id=s.id) }}" style="display:inline;">
+              <input type="hidden" name="status" value="rejeitada">
+              <button type="submit" class="btn btn-sm btn-perigo">Rejeitar</button>
+            </form>
+            {% elif s.status == 'aprovada' %}
+            <form method="post" action="{{ url_for('estoque.atualizar_status_solicitacao', solicitacao_id=s.id) }}">
+              <input type="hidden" name="status" value="comprada">
+              <button type="submit" class="btn btn-sm btn-secundario">Marcar comprada</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma solicitação de compra registrada ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ solicitacoes|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

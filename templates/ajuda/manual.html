@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block titulo %}Manual do Usuário{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Manual do Usuário</h1>
+    <p class="subtitulo">Guia rápido de cada módulo do GEC</p>
+  </div>
+</div>
+
+<div class="painel">
+  <h2>Primeiros passos</h2>
+  <p class="texto-mudo">Ao logar, a tela inicial (<strong>Painel</strong>) mostra os <strong>Atalhos</strong> (busca rápida de equipamento/OS e ordens abertas/atrasadas) e o ícone <strong>▦ Dashboard</strong>, com modelos de indicadores prontos.</p>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Equipamentos</h2>
+    <ul class="lista-simples">
+      <li><strong>Cadastro:</strong> ficha técnica completa, criticidade, calibração e preventiva com datas calculadas automaticamente.</li>
+      <li><strong>Fabricantes/Modelos:</strong> catálogo para padronizar o cadastro.</li>
+      <li><strong>Reserva/Transporte:</strong> controle de empréstimo e movimentação entre unidades.</li>
+      <li><strong>Padrões de calibração:</strong> marque um equipamento como padrão de referência para rastrear seu certificado.</li>
+      <li><strong>Contadores:</strong> registre uso por ciclos/disparos, não só por tempo.</li>
+    </ul>
+  </div>
+
+  <div class="painel">
+    <h2>Ordens de Serviço</h2>
+    <ul class="lista-simples">
+      <li><strong>Abrir OS:</strong> formulário completo, com serviço externo, orçamento e centro de custo.</li>
+      <li><strong>OS Rápida:</strong> abertura em 1 campo para urgências.</li>
+      <li><strong>Buscar/Gerar Manutenções Previstas:</strong> gera a OS de preventiva/calibração com 1 clique.</li>
+      <li><strong>Quadro Kanban / Monitor:</strong> visão geral do andamento.</li>
+      <li><strong>Assinatura eletrônica:</strong> na tela da OS, confirme com seu nome ao concluir um serviço.</li>
+    </ul>
+  </div>
+
+  <div class="painel">
+    <h2>Estoque</h2>
+    <ul class="lista-simples">
+      <li><strong>Produtos:</strong> peças e insumos, com quantidade mínima de alerta.</li>
+      <li><strong>Solicitação → Pedido → Entrada:</strong> fluxo de compra: primeiro pede, depois faz o pedido ao fornecedor, e só a <strong>Entrada</strong> soma no estoque de fato.</li>
+      <li><strong>Baixas:</strong> retirar item do estoque por perda/avaria.</li>
+      <li><strong>Inventário:</strong> abre com a posição do sistema, você preenche a contagem física, e ao fechar o estoque é ajustado.</li>
+    </ul>
+  </div>
+
+  <div class="painel">
+    <h2>Gestão</h2>
+    <ul class="lista-simples">
+      <li><strong>Indicadores/Dados Consolidados:</strong> números do parque e das OS.</li>
+      <li><strong>Fornecedores/Contratos:</strong> com alerta de contratos vencendo.</li>
+      <li><strong>Colaboradores/Horas:</strong> equipe e apontamento de horas trabalhadas.</li>
+      <li><strong>Procedimentos:</strong> monte um checklist e vincule a um modelo de equipamento.</li>
+    </ul>
+  </div>
+
+  <div class="painel">
+    <h2>Financeiro e Consumo</h2>
+    <ul class="lista-simples">
+      <li><strong>Financeiro:</strong> resumo de custos, centro de custo/lucro, relatórios.</li>
+      <li><strong>Consumo:</strong> acompanhamento de utilidades/insumos (energia, gases) por período, com meta e comparativo.</li>
+    </ul>
+  </div>
+
+  <div class="painel">
+    <h2>Configuração (só administradores)</h2>
+    <ul class="lista-simples">
+      <li><strong>Usuários/Grupos:</strong> quem acessa o sistema e com qual cargo.</li>
+      <li><strong>Configurações de Senha:</strong> regras aplicadas de verdade ao criar/trocar senha.</li>
+      <li><strong>Alerta Geral:</strong> avisa todos os usuários logados com um banner.</li>
+      <li><strong>Log de Acessos / Acessos Falhos:</strong> auditoria de quem entrou e tentativas erradas.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="painel">
+  <h2>Menu do seu perfil</h2>
+  <p class="texto-mudo">Clique nas suas iniciais no topo direito para: editar seu perfil e senha, ver sua agenda/tarefas, consultar a agenda telefônica, usar o chat interno, ou gerar tokens de acesso pessoal.</p>
+</div>
+
+{% endblock %}

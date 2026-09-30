@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block titulo %}Sensores{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Sensores</h1>
+    <p class="subtitulo">Leitura manual por enquanto — integração com sensores IoT reais depende de hardware que este sistema ainda não tem conectado</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo sensor</h2>
+    <form method="post">
+      <div class="form-grid">
+        <div class="campo span-2">
+          <label for="nome">Nome *</label>
+          <input type="text" id="nome" name="nome" required placeholder="Ex: Temperatura - Câmara fria CME">
+        </div>
+        <div class="campo span-2">
+          <label for="equipamento_id">Equipamento (opcional)</label>
+          <select id="equipamento_id" name="equipamento_id">
+            <option value="">—</option>
+            {% for e in equipamentos %}
+            <option value="{{ e.id }}">{{ e.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="campo">
+          <label for="tipo_medida">O que mede</label>
+          <input type="text" id="tipo_medida" name="tipo_medida" placeholder="Ex: Temperatura">
+        </div>
+        <div class="campo">
+          <label for="unidade_medida">Unidade</label>
+          <input type="text" id="unidade_medida" name="unidade_medida" value="°C">
+        </div>
+        <div class="campo">
+          <label for="valor_minimo">Valor mínimo aceitável</label>
+          <input type="number" step="0.01" id="valor_minimo" name="valor_minimo">
+        </div>
+        <div class="campo">
+          <label for="valor_maximo">Valor máximo aceitável</label>
+          <input type="number" step="0.01" id="valor_maximo" name="valor_maximo">
+        </div>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Cadastrar sensor</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="painel">
+    <h2>Sensores e últimas leituras</h2>
+    {% if sensores %}
+    <ul class="lista-simples">
+      {% for s in sensores %}
+      <li>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span>
+            <strong>{{ s.nome }}</strong>
+            {% if s.equipamento_nome %}<span class="texto-mudo texto-pequeno"> — {{ s.equipamento_nome }}</span>{% endif %}<br>
+            {% if s.ultima_leitura is not none %}
+              {% set fora_da_faixa = (s.valor_minimo is not none and s.ultima_leitura < s.valor_minimo) or (s.valor_maximo is not none and s.ultima_leitura > s.valor_maximo) %}
+              <span class="badge {{ 'badge-vermelho' if fora_da_faixa else 'badge-verde' }}">{{ s.ultima_leitura }} {{ s.unidade_medida }}</span>
+            {% else %}
+              <span class="texto-mudo texto-pequeno">Sem leituras ainda</span>
+            {% endif %}
+          </span>
+          <form method="post" action="{{ url_for('gestao.registrar_leitura_sensor', sensor_id=s.id) }}" style="display:flex; gap:6px;">
+            <input type="number" step="0.01" name="valor" placeholder="Novo valor" required style="width:110px;">
+            <button type="submit" class="btn btn-sm btn-secundario">Registrar</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum sensor cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

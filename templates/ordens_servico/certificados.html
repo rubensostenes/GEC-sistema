@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Certificados Aguardando Análise' if apenas_pendentes else 'Listagem dos Certificados' }}{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📜 {{ 'Certificados Aguardando Análise' if apenas_pendentes else 'Listagem dos Certificados' }}</div>
+
+  <div class="nv-toolbar">
+    {% if not apenas_pendentes %}
+    <a href="{{ url_for('ordens_servico.certificados_aguardando_analise') }}" class="nv-toolbar-btn"><span class="icone">⏳</span> Pendentes de análise</a>
+    {% else %}
+    <a href="{{ url_for('ordens_servico.certificados') }}" class="nv-toolbar-btn"><span class="icone">📋</span> Ver todos</a>
+    {% endif %}
+  </div>
+
+  {% if not apenas_pendentes %}
+  <form method="get" class="nv-busca-painel">
+    <div class="nv-busca-grid">
+      <div class="campo">
+        <label>Buscar</label>
+        <input type="text" name="q" value="{{ filtros.q }}" placeholder="OS, certificado ou equipamento">
+      </div>
+      <div class="campo">
+        <label>Tipo</label>
+        <select name="tipo">
+          <option value="">Todos</option>
+          <option value="preventiva" {{ 'selected' if filtros.tipo == 'preventiva' }}>Preventiva</option>
+          <option value="calibracao" {{ 'selected' if filtros.tipo == 'calibracao' }}>Calibração</option>
+        </select>
+      </div>
+    </div>
+    <div class="nv-busca-rodape">
+      <span></span>
+      <button type="submit" class="btn btn-secundario">🔍 Procurar</button>
+    </div>
+  </form>
+  {% endif %}
+</div>
+
+{% if not apenas_pendentes and certificados_oficiais is defined %}
+<div class="nv-janela">
+  <div class="nv-janela-titulo">✅ Certificados oficiais (Neovero)</div>
+  <p class="texto-mudo texto-pequeno" style="padding:10px 14px 0;">Número e situação de aprovação originais, importados do Neovero.</p>
+  {% if certificados_oficiais %}
+  <table class="nv-grid">
+    <thead><tr><th>OS</th><th>Certificado</th><th>Situação</th><th>Validade</th><th>Tipo</th><th>Equipamento</th><th></th></tr></thead>
+    <tbody>
+      {% for c in certificados_oficiais %}
+      <tr>
+        <td>{{ c.numero }}</td>
+        <td>{{ c.certificado_numero }}</td>
+        <td><span class="badge badge-{{ 'verde' if c.certificado_situacao == 'aprovado' else 'vermelho' }}">{{ 'Aprovado' if c.certificado_situacao == 'aprovado' else 'Não aprovado' }}</span></td>
+        <td class="texto-mudo">{{ c.certificado_validade or '—' }}</td>
+        <td class="texto-mudo">{{ tipo_labels.get(c.tipo, c.tipo) }}</td>
+        <td class="texto-mudo">{{ c.equipamento_nome or '—' }}</td>
+        <td><a href="{{ url_for('ordens_servico.certificado', ordem_id=c.ordem_id) }}" target="_blank" class="btn btn-sm btn-secundario">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum certificado oficial encontrado com os filtros atuais.</p>
+  {% endif %}
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ certificados_oficiais|length }} registro(s)</div>
+  </div>
+</div>
+{% endif %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📎 Certificados enviados (arquivo)</div>
+  {% if certificados %}
+  <table class="nv-grid">
+    <thead><tr><th>Arquivo</th><th>Vínculo</th><th>Enviado em</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for c in certificados %}
+      <tr>
+        <td><a href="{{ url_for('static', filename=c.caminho) }}" target="_blank">{{ c.nome_arquivo }}</a></td>
+        <td class="texto-mudo">
+          {% if c.equipamento_nome %}{{ c.equipamento_nome }}{% elif c.os_numero %}OS {{ c.os_numero }}{% else %}—{% endif %}
+        </td>
+        <td class="texto-mudo">{{ c.criado_em[:10] }}</td>
+        <td>
+          {% if c.revisado %}<span class="badge badge-verde">Analisado</span>
+          {% else %}<span class="badge badge-laranja">Pendente</span>{% endif %}
+        </td>
+        <td>
+          {% if not c.revisado %}
+          <form method="post" action="{{ url_for('ordens_servico.revisar_certificado', anexo_id=c.id) }}">
+            <button type="submit" class="btn btn-sm btn-secundario">Marcar analisado</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum certificado em arquivo {{ 'pendente de análise' if apenas_pendentes else 'cadastrado' }} no momento.</p>
+  {% endif %}
+</div>
+
+{% if not apenas_pendentes %}
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🧾 Certificados gerados pelo GEC</div>
+  <p class="texto-mudo texto-pequeno" style="padding:10px 14px 0;">Ordens de serviço de preventiva/calibração concluídas sem certificado oficial ou arquivo anexado — montado a partir dos dados da própria OS.</p>
+  {% if certificados_gerados %}
+  <table class="nv-grid">
+    <thead><tr><th>OS</th><th>Tipo</th><th>Equipamento</th><th>Conclusão</th><th></th></tr></thead>
+    <tbody>
+      {% for c in certificados_gerados %}
+      <tr>
+        <td>{{ c.numero }}</td>
+        <td class="texto-mudo">{{ tipo_labels.get(c.tipo, c.tipo) }}</td>
+        <td class="texto-mudo">{{ c.equipamento_nome or '—' }}</td>
+        <td class="texto-mudo">{{ c.data_conclusao or '—' }}</td>
+        <td><a href="{{ url_for('ordens_servico.certificado', ordem_id=c.ordem_id) }}" target="_blank" class="btn btn-sm btn-secundario">Ver certificado</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum certificado gerado disponível com os filtros atuais.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

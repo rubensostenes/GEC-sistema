@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block titulo %}Inventário{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ inventario.descricao or ('Inventário #' ~ inventario.id) }}</h1>
+    <p class="subtitulo">{{ inventario.data_inventario }} · <span class="badge badge-{{ 'verde' if inventario.status == 'fechado' else 'azul' }}">{{ inventario.status }}</span></p>
+  </div>
+  {% if inventario.status == 'aberto' %}
+  <form method="post" action="{{ url_for('estoque.fechar_inventario', inventario_id=inventario.id) }}" onsubmit="return confirm('Fechar o inventário ajusta o estoque conforme a contagem informada. Confirmar?');">
+    <button type="submit" class="btn btn-primario">Fechar inventário e ajustar estoque</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="painel">
+  <form method="post" action="{{ url_for('estoque.registrar_contagem', inventario_id=inventario.id) }}">
+    <div class="tabela-wrap">
+      <table class="tabela">
+        <thead><tr><th>Peça</th><th>Qtd. no sistema</th><th>Qtd. contada</th><th>Diferença</th></tr></thead>
+        <tbody>
+          {% for i in itens %}
+          <tr>
+            <td>{{ i.peca_nome }}</td>
+            <td class="texto-mudo">{{ i.quantidade_sistema }} {{ i.unidade_medida }}</td>
+            <td>
+              {% if inventario.status == 'aberto' %}
+              <input type="number" step="0.01" name="contagem_{{ i.id }}" value="{{ i.quantidade_contada if i.quantidade_contada is not none else '' }}" style="width:110px;">
+              {% else %}
+              {{ i.quantidade_contada if i.quantidade_contada is not none else '—' }}
+              {% endif %}
+            </td>
+            <td>
+              {% if i.quantidade_contada is not none %}
+              {% set diff = i.quantidade_contada - i.quantidade_sistema %}
+              <span class="{{ 'texto-mudo' if diff == 0 else ('badge badge-vermelho' if diff < 0 else 'badge badge-verde') }}">{{ diff }}</span>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if inventario.status == 'aberto' %}
+    <div class="acoes-form">
+      <button type="submit" class="btn btn-primario">Salvar contagem</button>
+    </div>
+    {% endif %}
+  </form>
+</div>
+
+{% endblock %}

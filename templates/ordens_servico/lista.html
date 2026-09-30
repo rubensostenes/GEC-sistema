@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo|default('Ordens de Serviço', true) }}{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🛠 {{ titulo|default('Ordens de Serviço', true) }}</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('ordens_servico.nova') }}" class="nv-toolbar-btn"><span class="icone">➕</span> Abrir Ordem de Serviço</a>
+    <a href="{{ url_for('ordens_servico.rapida') }}" class="nv-toolbar-btn"><span class="icone">⚡</span> OS Rápida</a>
+    <a href="{{ url_for('ordens_servico.kanban') }}" class="nv-toolbar-btn"><span class="icone">🗂</span> Quadro Kanban</a>
+    <a href="{{ url_for('ordens_servico.monitor') }}" class="nv-toolbar-btn"><span class="icone">🖥</span> Monitor de Atendimento</a>
+  </div>
+
+  {% if mostrar_filtros|default(true) %}
+  <form method="get" class="nv-busca-painel">
+    <div class="nv-busca-grid">
+      <div class="campo">
+        <label>Nº da OS / Equipamento</label>
+        <input type="text" name="q" placeholder="Número, TAG, equipamento, descrição..." value="{{ filtros.q }}">
+      </div>
+      <div class="campo">
+        <label>Situação</label>
+        <select name="status">
+          <option value="">Todos</option>
+          {% for k, v in status_labels.items() %}
+          <option value="{{ k }}" {{ 'selected' if filtros.status == k }}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="campo">
+        <label>Tipo de Manutenção</label>
+        <select name="tipo">
+          <option value="">Todos</option>
+          {% for k, v in tipo_labels.items() %}
+          <option value="{{ k }}" {{ 'selected' if filtros.tipo == k }}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="campo">
+        <label>Prioridade</label>
+        <select name="prioridade">
+          <option value="">Todas</option>
+          {% for k, v in prioridade_labels.items() %}
+          <option value="{{ k }}" {{ 'selected' if filtros.prioridade == k }}>{{ v }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="nv-busca-rodape">
+      <span></span>
+      <button type="submit" class="btn btn-secundario">🔍 Procurar</button>
+    </div>
+  </form>
+  {% endif %}
+
+  {% if ordens %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead>
+        <tr>
+          <th>OS</th><th>TAG</th><th>Equipamento / Setor</th><th>Tipo</th>
+          <th>Situação</th><th>Prioridade</th><th>Técnico</th><th>Abertura</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for os in ordens %}
+        <tr onclick="window.location='{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}'">
+          <td><a href="{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}"><strong>{{ os.numero }}</strong></a></td>
+          <td>{{ os.tag or '—' }}</td>
+          <td>{{ os.equipamento_nome or '—' }}<br><span class="texto-mudo">{{ os.unidade_nome or '' }}{% if os.setor_nome %} / {{ os.setor_nome }}{% endif %}</span></td>
+          <td>{{ tipo_labels[os.tipo] }}</td>
+          <td><span class="badge badge-{{ {'aberta':'azul','em_andamento':'laranja','aguardando_peca':'laranja','concluida':'verde','cancelada':'cinza'}[os.status] }}">{{ status_labels[os.status] }}</span></td>
+          <td><span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[os.prioridade] }}">{{ prioridade_labels[os.prioridade] }}</span></td>
+          <td>{{ os.tecnico_nome or '—' }}</td>
+          <td>{{ os.data_abertura[:10] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma ordem de serviço encontrada.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div class="nv-legenda">
+      <span><span class="ponto" style="background:var(--azul-500);"></span>Aberta</span>
+      <span><span class="ponto" style="background:var(--laranja);"></span>Em andamento</span>
+      <span><span class="ponto" style="background:var(--verde);"></span>Concluída</span>
+    </div>
+    <div>Exibindo {{ ordens|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

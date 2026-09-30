@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Rastreabilidade dos Padrões' if modo == 'rastreabilidade' else 'Padrões Preferenciais' }}{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ 'Rastreabilidade dos Padrões' if modo == 'rastreabilidade' else 'Padrões Preferenciais' }}</h1>
+    <p class="subtitulo">
+      {% if modo == 'rastreabilidade' %}
+      Certificados e validade de rastreabilidade dos padrões de calibração
+      {% else %}
+      Equipamentos designados como padrão de referência para calibração
+      {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if equipamentos %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      {% if modo == 'rastreabilidade' %}
+      <thead><tr><th>Equipamento</th><th>Certificado</th><th>Órgão certificador</th><th>Validade</th></tr></thead>
+      <tbody>
+        {% for e in equipamentos %}
+        <tr>
+          <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=e.id) }}">{{ e.nome }}</a></td>
+          <td class="texto-mudo">{{ e.certificado_rastreabilidade or '—' }}</td>
+          <td class="texto-mudo">{{ e.orgao_certificador or '—' }}</td>
+          <td>
+            {% if e.data_validade_rastreabilidade and e.data_validade_rastreabilidade < hoje %}
+            <span class="badge badge-vermelho">{{ e.data_validade_rastreabilidade }}</span>
+            {% else %}{{ e.data_validade_rastreabilidade or '—' }}{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% else %}
+      <thead><tr><th>Equipamento</th><th>Unidade</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for e in equipamentos %}
+        <tr>
+          <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=e.id) }}">{{ e.nome }}</a></td>
+          <td class="texto-mudo">{{ e.unidade_nome or '—' }}</td>
+          <td><span class="badge badge-azul">{{ e.status.replace('_',' ') }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhum equipamento marcado como padrão de calibração. Marque essa opção na edição do equipamento.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

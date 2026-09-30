@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block titulo %}{{ ordem.numero }}{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ ordem.numero }}</h1>
+    <p class="subtitulo">
+      {{ tipo_labels[ordem.tipo] }} ·
+      <span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[ordem.prioridade] }}">{{ prioridade_labels[ordem.prioridade] }}</span>
+      <span class="badge badge-{{ {'aberta':'azul','em_andamento':'laranja','aguardando_peca':'laranja','concluida':'verde','cancelada':'cinza'}[ordem.status] }}">{{ status_labels[ordem.status] }}</span>
+      {% if ordem.label_nome %}<span class="badge" style="background:{{ ordem.label_cor }}22; color:{{ ordem.label_cor }};">{{ ordem.label_nome }}</span>{% endif %}
+      {% if ordem.plano_nome %}<span class="texto-mudo texto-pequeno"> · gerada pelo plano {{ ordem.plano_nome }}</span>{% endif %}
+    </p>
+  </div>
+  {% if ordem.tipo in ('preventiva', 'calibracao') %}
+  <a href="{{ url_for('ordens_servico.certificado', ordem_id=ordem.id) }}" target="_blank" class="btn btn-secundario">Ver Certificado</a>
+  {% endif %}
+</div>
+
+{% if checklist %}
+<div class="painel" style="border-left:4px solid var(--azul-500);">
+  <h2>Checklist do plano de manutenção</h2>
+  <ul class="lista-simples">
+    {% for item in checklist %}
+    <li>
+      <form method="post" action="{{ url_for('ordens_servico.alternar_checklist', ordem_id=ordem.id, item_id=item.procedimento_item_id) }}" style="display:flex; align-items:center; gap:8px;">
+        <button type="submit" class="btn btn-sm {{ 'btn-sucesso' if item.concluido else 'btn-secundario' }}">{{ '✓' if item.concluido else '—' }}</button>
+        <span style="{{ 'text-decoration:line-through; color:var(--cinza-400);' if item.concluido }}">{{ item.descricao }}</span>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if ordem.aguardando_aprovacao_orcamento %}
+<div class="painel" style="border-left:4px solid var(--laranja); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+  <div>
+    <strong>Aguardando aprovação de orçamento</strong>
+    <p class="texto-mudo texto-pequeno" style="margin:4px 0 0;">
+      {{ ordem.empresa_terceirizada or 'Empresa terceirizada' }}{% if ordem.valor_orcamento %} — Orçamento: R$ {{ '%.2f'|format(ordem.valor_orcamento) }}{% endif %}
+    </p>
+  </div>
+  <form method="post" action="{{ url_for('ordens_servico.aprovar_orcamento', ordem_id=ordem.id) }}">
+    <button type="submit" class="btn btn-sucesso">Aprovar orçamento</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="grid-2col">
+  <div>
+    <div class="painel">
+      <h2>Detalhes</h2>
+      <div class="form-grid">
+        <div><strong>Equipamento</strong><br>
+          {% if ordem.eq_id %}<a href="{{ url_for('equipamentos.detalhe', equipamento_id=ordem.eq_id) }}">{{ ordem.equipamento_nome }}</a>{% else %}<span class="texto-mudo">—</span>{% endif %}
+        </div>
+        <div><strong>Solicitante</strong><br><span class="texto-mudo">{{ ordem.solicitante or '—' }}</span></div>
+        <div><strong>Técnico responsável</strong><br><span class="texto-mudo">{{ ordem.tecnico_nome or '—' }}</span></div>
+        <div><strong>Abertura</strong><br><span class="texto-mudo">{{ ordem.data_abertura }}</span></div>
+        <div><strong>Agendada</strong><br><span class="texto-mudo">{{ ordem.data_agendada or '—' }}</span></div>
+        <div><strong>Início</strong><br><span class="texto-mudo">{{ ordem.data_inicio or '—' }}</span></div>
+        <div><strong>Conclusão</strong><br><span class="texto-mudo">{{ ordem.data_conclusao or '—' }}</span></div>
+        <div><strong>Tempo parado (h)</strong><br><span class="texto-mudo">{{ ordem.tempo_parado_horas or '—' }}</span></div>
+        <div><strong>Custo peças</strong><br><span class="texto-mudo">R$ {{ '%.2f'|format(ordem.custo_pecas) }}</span></div>
+        <div><strong>Custo mão de obra</strong><br><span class="texto-mudo">R$ {{ '%.2f'|format(ordem.custo_mao_obra) }}</span></div>
+        {% if ordem.empresa_terceirizada %}
+        <div><strong>Empresa terceirizada</strong><br><span class="texto-mudo">{{ ordem.empresa_terceirizada }}</span></div>
+        {% endif %}
+      </div>
+      <hr class="divisor">
+      <strong>Problema relatado</strong>
+      <p class="texto-mudo">{{ ordem.descricao_problema }}</p>
+      {% if ordem.solucao %}
+      <strong>Solução aplicada</strong>
+      <p class="texto-mudo">{{ ordem.solucao }}</p>
+      {% endif %}
+    </div>
+
+    <div class="painel">
+      <h2>Atualizar status</h2>
+      <form method="post" action="{{ url_for('ordens_servico.atualizar_status', ordem_id=ordem.id) }}">
+        <div class="form-grid">
+          <div class="campo">
+            <label for="status">Novo status</label>
+            <select id="status" name="status">
+              {% for k, v in status_labels.items() %}
+              <option value="{{ k }}" {{ 'selected' if k == ordem.status }}>{{ v }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="campo">
+            <label for="tecnico_id">Técnico responsável</label>
+            <select id="tecnico_id" name="tecnico_id">
+              <option value="">— A definir —</option>
+              {% for t in tecnicos %}
+              <option value="{{ t.id }}" {{ 'selected' if ordem.tecnico_id == t.id }}>{{ t.nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="campo">
+            <label for="data_execucao">Data de execução (se concluindo)</label>
+            <input type="date" id="data_execucao" name="data_execucao">
+          </div>
+          <div class="campo">
+            <label for="tempo_parado_horas">Tempo parado (horas)</label>
+            <input type="number" step="0.1" id="tempo_parado_horas" name="tempo_parado_horas">
+          </div>
+          <div class="campo">
+            <label for="custo_mao_obra">Custo de mão de obra (R$)</label>
+            <input type="number" step="0.01" id="custo_mao_obra" name="custo_mao_obra">
+          </div>
+          <div class="campo span-2">
+            <label for="solucao">Solução aplicada (ao concluir)</label>
+            <textarea id="solucao" name="solucao"></textarea>
+          </div>
+          <div class="campo span-2">
+            <label for="observacao">Observação sobre a mudança de status</label>
+            <input type="text" id="observacao" name="observacao">
+          </div>
+        </div>
+        <div class="acoes-form">
+          <button type="submit" class="btn btn-primario">Atualizar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="painel">
+      <h2>Histórico</h2>
+      <ul class="lista-simples">
+        {% for h in historico %}
+        <li>
+          <strong>{{ status_labels.get(h.status_novo, h.status_novo) }}</strong>
+          <span class="texto-mudo texto-pequeno"> — {{ h.criado_em }} por {{ h.usuario_nome or 'sistema' }}</span>
+          {% if h.observacao %}<br><span class="texto-pequeno">{{ h.observacao }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div>
+    <div class="painel">
+      <h2>Peças utilizadas</h2>
+      <form method="post" action="{{ url_for('ordens_servico.adicionar_peca', ordem_id=ordem.id) }}" style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <select name="peca_id" style="flex:2; min-width:130px;" required>
+          <option value="">Selecione a peça...</option>
+          {% for p in pecas_disponiveis %}
+          <option value="{{ p.id }}">{{ p.nome }} (estoque: {{ p.quantidade }})</option>
+          {% endfor %}
+        </select>
+        <input type="number" name="quantidade" value="1" min="0.01" step="0.01" style="flex:1; min-width:70px;">
+        <button type="submit" class="btn btn-sm btn-secundario">Adicionar</button>
+      </form>
+      {% if pecas_usadas %}
+      <ul class="lista-simples">
+        {% for p in pecas_usadas %}
+        <li style="display:flex; justify-content:space-between;">
+          <span>{{ p.peca_nome }} — {{ p.quantidade }} {{ p.unidade_medida }}</span>
+          <strong>R$ {{ '%.2f'|format(p.quantidade * p.custo_unitario) }}</strong>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="texto-mudo texto-pequeno">Nenhuma peça registrada nesta OS.</p>
+      {% endif %}
+    </div>
+
+    <div class="painel">
+      <h2>Anexos (laudos, fotos, orçamentos)</h2>
+      <form method="post" action="{{ url_for('ordens_servico.anexar', ordem_id=ordem.id) }}" enctype="multipart/form-data" style="display:flex; gap:8px; margin-bottom:14px;">
+        <input type="file" name="arquivo" required style="flex:1;">
+        <button type="submit" class="btn btn-sm btn-secundario">Enviar</button>
+      </form>
+      {% if anexos %}
+      <ul class="lista-simples">
+        {% for a in anexos %}
+        <li><a href="{{ url_for('static', filename=a.caminho) }}" target="_blank">{{ a.nome_arquivo }}</a></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="texto-mudo texto-pequeno">Nenhum anexo enviado.</p>
+      {% endif %}
+    </div>
+
+    <div class="painel">
+      <h2>Assinatura eletrônica <span class="texto-mudo texto-pequeno">(simples — não é assinatura digital ICP-Brasil)</span></h2>
+      <form method="post" action="{{ url_for('ordens_servico.assinar', ordem_id=ordem.id) }}" style="display:flex; gap:8px; margin-bottom:14px;">
+        <input type="text" name="nome_declarado" placeholder="Digite seu nome completo para confirmar" required style="flex:1;" value="{{ current_user.nome }}">
+        <button type="submit" class="btn btn-sm btn-primario">Assinar</button>
+      </form>
+      {% if assinaturas %}
+      <ul class="lista-simples">
+        {% for a in assinaturas %}
+        <li>{{ a.nome_declarado }} <span class="texto-mudo texto-pequeno">— {{ a.criado_em }}{% if a.ip %} · IP {{ a.ip }}{% endif %}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="texto-mudo texto-pequeno">Nenhuma assinatura registrada ainda.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

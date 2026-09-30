@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Tabelas de Acompanhamento de Consumo{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🔌 Tabelas de Acompanhamento de Consumo</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('consumo.nova_tabela') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Nova Tabela</a>
+  </div>
+
+  {% if tabelas %}
+  <table class="nv-grid">
+    <thead><tr><th>Nome</th><th>Grupo</th><th>Unidade (local)</th><th>Unidade de medida</th></tr></thead>
+    <tbody>
+      {% for t in tabelas %}
+      <tr>
+        <td><strong>{{ t.nome }}</strong></td>
+        <td class="texto-mudo">{{ t.grupo_nome or '—' }}</td>
+        <td class="texto-mudo">{{ t.unidade_nome or '—' }}</td>
+        <td>{{ t.unidade_medida }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma tabela de acompanhamento cadastrada ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ tabelas|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

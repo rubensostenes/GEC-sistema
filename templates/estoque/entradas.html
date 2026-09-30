@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Entradas / Notas Fiscais{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🧾 Entradas / Notas Fiscais</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('estoque.nova_entrada') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Nova Entrada</a>
+  </div>
+
+  {% if entradas %}
+  <table class="nv-grid">
+    <thead><tr><th>Nota fiscal</th><th>Fornecedor</th><th>Data</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for e in entradas %}
+      <tr onclick="window.location='{{ url_for('estoque.detalhe_entrada', entrada_id=e.id) }}'">
+        <td><a href="{{ url_for('estoque.detalhe_entrada', entrada_id=e.id) }}"><strong>{{ e.numero_nota or ('Entrada #' ~ e.id) }}</strong></a></td>
+        <td class="texto-mudo">{{ e.fornecedor_nome or '—' }}</td>
+        <td>{{ e.data_entrada }}</td>
+        <td>R$ {{ '%.2f'|format(e.total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma entrada registrada ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ entradas|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

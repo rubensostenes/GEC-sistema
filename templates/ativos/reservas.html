@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Reserva de Equipamentos{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🔖 Reserva de Equipamentos</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('ativos.nova_reserva') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Nova Reserva</a>
+  </div>
+
+  {% if reservas %}
+  <table class="nv-grid">
+    <thead><tr><th>Equipamento</th><th>Solicitante</th><th>Início</th><th>Fim</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for r in reservas %}
+      <tr>
+        <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=r.equipamento_id) }}">{{ r.equipamento_nome }}</a></td>
+        <td class="texto-mudo">{{ r.solicitante }}</td>
+        <td>{{ r.data_inicio }}</td>
+        <td>{{ r.data_fim }}</td>
+        <td><span class="badge badge-azul">{{ r.status.replace('_',' ') }}</span></td>
+        <td>
+          <form method="post" action="{{ url_for('ativos.devolver_reserva', reserva_id=r.id) }}">
+            <button type="submit" class="btn btn-sm btn-secundario">Marcar devolvido</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma reserva ativa no momento.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ reservas|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

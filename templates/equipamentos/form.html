@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if equipamento else 'Novo' }} Equipamento{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">🔧 {{ 'Editar Equipamento' if equipamento else 'Novo Equipamento' }}</div>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="nv-form">
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Identificação</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="nome">Nome / tipo</label>
+      <input list="categorias" type="text" id="nome" name="nome" required value="{{ equipamento.nome if equipamento else '' }}">
+      <datalist id="categorias">
+        {% for c in categorias %}<option value="{{ c }}">{% endfor %}
+      </datalist>
+    </div>
+    <div class="campo">
+      <label for="categoria">Categoria</label>
+      <input list="categorias" type="text" id="categoria" name="categoria" value="{{ equipamento.categoria if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="patrimonio">Nº de patrimônio</label>
+      <input type="text" id="patrimonio" name="patrimonio" value="{{ equipamento.patrimonio if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="fabricante">Fabricante</label>
+      <input type="text" id="fabricante" name="fabricante" value="{{ equipamento.fabricante if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="modelo">Modelo</label>
+      <input type="text" id="modelo" name="modelo" value="{{ equipamento.modelo if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="numero_serie">Número de série</label>
+      <input type="text" id="numero_serie" name="numero_serie" value="{{ equipamento.numero_serie if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="registro_anvisa">Registro ANVISA</label>
+      <input type="text" id="registro_anvisa" name="registro_anvisa" value="{{ equipamento.registro_anvisa if equipamento else '' }}">
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Localização e classificação de risco</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="unidade_id">Unidade</label>
+      <select id="unidade_id" name="unidade_id">
+        <option value="">—</option>
+        {% for u in unidades %}
+        <option value="{{ u.id }}" {{ 'selected' if equipamento and equipamento.unidade_id == u.id }}>{{ u.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="setor_id">Setor</label>
+      <select id="setor_id" name="setor_id">
+        <option value="">—</option>
+        {% for s in setores %}
+        <option value="{{ s.id }}" {{ 'selected' if equipamento and equipamento.setor_id == s.id }}>{{ s.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="localizacao">Localização detalhada</label>
+      <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Sala 3, Consultório 2" value="{{ equipamento.localizacao if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="criticidade">Criticidade</label>
+      <select id="criticidade" name="criticidade">
+        <option value="baixa" {{ 'selected' if equipamento and equipamento.criticidade == 'baixa' }}>Baixa</option>
+        <option value="media" {{ 'selected' if not equipamento or equipamento.criticidade == 'media' }}>Média</option>
+        <option value="alta" {{ 'selected' if equipamento and equipamento.criticidade == 'alta' }}>Alta</option>
+        <option value="critica" {{ 'selected' if equipamento and equipamento.criticidade == 'critica' }}>Crítica</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="status">Status</label>
+      <select id="status" name="status">
+        <option value="ativo" {{ 'selected' if not equipamento or equipamento.status == 'ativo' }}>Ativo</option>
+        <option value="em_manutencao" {{ 'selected' if equipamento and equipamento.status == 'em_manutencao' }}>Em manutenção</option>
+        <option value="inativo" {{ 'selected' if equipamento and equipamento.status == 'inativo' }}>Inativo</option>
+        <option value="emprestado" {{ 'selected' if equipamento and equipamento.status == 'emprestado' }}>Emprestado</option>
+        <option value="baixado" {{ 'selected' if equipamento and equipamento.status == 'baixado' }}>Baixado</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="label_id">Label</label>
+      <select id="label_id" name="label_id">
+        <option value="">—</option>
+        {% for l in labels %}
+        <option value="{{ l.id }}" {{ 'selected' if equipamento and equipamento.label_id == l.id }}>{{ l.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Aquisição e garantia</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="data_aquisicao">Data de aquisição</label>
+      <input type="date" id="data_aquisicao" name="data_aquisicao" value="{{ equipamento.data_aquisicao if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="valor_aquisicao">Valor de aquisição (R$)</label>
+      <input type="number" step="0.01" id="valor_aquisicao" name="valor_aquisicao" value="{{ equipamento.valor_aquisicao if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="fornecedor">Fornecedor</label>
+      <input type="text" id="fornecedor" name="fornecedor" value="{{ equipamento.fornecedor if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="data_fim_garantia">Fim da garantia</label>
+      <input type="date" id="data_fim_garantia" name="data_fim_garantia" value="{{ equipamento.data_fim_garantia if equipamento else '' }}">
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Calibração</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label class="checkbox">
+        <input type="checkbox" id="necessita_calibracao" name="necessita_calibracao" {{ 'checked' if equipamento and equipamento.necessita_calibracao }}>
+        Este equipamento necessita calibração periódica
+      </label>
+    </div>
+    <div class="campo">
+      <label for="periodicidade_calibracao_meses">Periodicidade (meses)</label>
+      <input type="number" id="periodicidade_calibracao_meses" name="periodicidade_calibracao_meses" value="{{ equipamento.periodicidade_calibracao_meses if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="data_ultima_calibracao">Última calibração</label>
+      <input type="date" id="data_ultima_calibracao" name="data_ultima_calibracao" value="{{ equipamento.data_ultima_calibracao if equipamento else '' }}">
+    </div>
+    <div class="campo alinhar-topo">
+      <label for="data_proxima_calibracao">Próxima calibração</label>
+      <div>
+        <input type="date" id="data_proxima_calibracao" name="data_proxima_calibracao" value="{{ equipamento.data_proxima_calibracao if equipamento else '' }}">
+        <div class="ajuda">Deixe em branco para calcular automaticamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Manutenção preventiva</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="periodicidade_preventiva_meses">Periodicidade (meses)</label>
+      <input type="number" id="periodicidade_preventiva_meses" name="periodicidade_preventiva_meses" value="{{ equipamento.periodicidade_preventiva_meses if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="data_ultima_preventiva">Última preventiva</label>
+      <input type="date" id="data_ultima_preventiva" name="data_ultima_preventiva" value="{{ equipamento.data_ultima_preventiva if equipamento else '' }}">
+    </div>
+    <div class="campo alinhar-topo">
+      <label for="data_proxima_preventiva">Próxima preventiva</label>
+      <div>
+        <input type="date" id="data_proxima_preventiva" name="data_proxima_preventiva" value="{{ equipamento.data_proxima_preventiva if equipamento else '' }}">
+        <div class="ajuda">Deixe em branco para calcular automaticamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Instalação, reposição e propriedade</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="data_instalacao">Data de instalação</label>
+      <input type="date" id="data_instalacao" name="data_instalacao" value="{{ equipamento.data_instalacao if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="valor_reposicao">Valor de reposição (R$)</label>
+      <input type="number" step="0.01" id="valor_reposicao" name="valor_reposicao" value="{{ equipamento.valor_reposicao if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label class="checkbox">
+        <input type="checkbox" name="de_terceiros" {{ 'checked' if equipamento and equipamento.de_terceiros }}>
+        Propriedade de terceiros
+      </label>
+    </div>
+    <div class="campo">
+      <label for="proprietario_terceiro">Proprietário (se de terceiros)</label>
+      <input type="text" id="proprietario_terceiro" name="proprietario_terceiro" value="{{ equipamento.proprietario_terceiro if equipamento else '' }}">
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Padrão de calibração (opcional)</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label class="checkbox">
+        <input type="checkbox" id="eh_padrao_calibracao" name="eh_padrao_calibracao" {{ 'checked' if equipamento and equipamento.eh_padrao_calibracao }}>
+        Este equipamento é um padrão de referência usado para calibrar outros
+      </label>
+    </div>
+    <div class="campo">
+      <label for="certificado_rastreabilidade">Nº do certificado</label>
+      <input type="text" id="certificado_rastreabilidade" name="certificado_rastreabilidade" value="{{ equipamento.certificado_rastreabilidade if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="orgao_certificador">Órgão certificador</label>
+      <input type="text" id="orgao_certificador" name="orgao_certificador" value="{{ equipamento.orgao_certificador if equipamento else '' }}">
+    </div>
+    <div class="campo">
+      <label for="data_validade_rastreabilidade">Validade</label>
+      <input type="date" id="data_validade_rastreabilidade" name="data_validade_rastreabilidade" value="{{ equipamento.data_validade_rastreabilidade if equipamento else '' }}">
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Outros</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo span-2 alinhar-topo">
+      <label for="observacoes">Observações</label>
+      <textarea id="observacoes" name="observacoes">{{ equipamento.observacoes if equipamento else '' }}</textarea>
+    </div>
+    <div class="campo">
+      <label for="foto">Foto do equipamento</label>
+      <div>
+        <input type="file" id="foto" name="foto" accept="image/*">
+        {% if equipamento and equipamento.foto_path %}
+        <div class="ajuda">Já existe uma foto cadastrada. Enviar um novo arquivo irá substituí-la.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar equipamento</button>
+    <a href="{{ url_for('equipamentos.lista') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+<script>
+  const selectUnidade = document.getElementById('unidade_id');
+  const selectSetor = document.getElementById('setor_id');
+  const setorAtual = "{{ equipamento.setor_id if equipamento else '' }}";
+
+  async function carregarSetores(unidadeId, manterSelecao) {
+    selectSetor.innerHTML = '<option value="">—</option>';
+    if (!unidadeId) return;
+    try {
+      const resp = await fetch(`/equipamentos/setores-por-unidade/${unidadeId}`);
+      const dados = await resp.json();
+      dados.setores.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.nome;
+        if (manterSelecao && String(s.id) === String(setorAtual)) opt.selected = true;
+        selectSetor.appendChild(opt);
+      });
+    } catch (e) { /* silencioso: cadastro segue funcionando sem setor */ }
+  }
+
+  if (selectUnidade.value) carregarSetores(selectUnidade.value, true);
+  selectUnidade.addEventListener('change', () => carregarSetores(selectUnidade.value, false));
+</script>
+
+{% endblock %}

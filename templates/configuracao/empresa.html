@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Empresa{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Dados da Empresa</h1>
+    <p class="subtitulo">O GEC atende uma organização por instalação — estes são os dados dela</p>
+  </div>
+</div>
+
+<form method="post" class="painel" style="max-width:560px;">
+  <div class="form-grid">
+    <div class="campo span-2">
+      <label for="nome">Nome *</label>
+      <input type="text" id="nome" name="nome" required value="{{ empresa.nome if empresa else nome_organizacao }}">
+    </div>
+    <div class="campo">
+      <label for="cnpj">CNPJ</label>
+      <input type="text" id="cnpj" name="cnpj" value="{{ empresa.cnpj if empresa else '' }}">
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone</label>
+      <input type="text" id="telefone" name="telefone" value="{{ empresa.telefone if empresa else '' }}">
+    </div>
+    <div class="campo span-2">
+      <label for="endereco">Endereço</label>
+      <input type="text" id="endereco" name="endereco" value="{{ empresa.endereco if empresa else '' }}">
+    </div>
+    <div class="campo span-2">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" value="{{ empresa.email if empresa else '' }}">
+    </div>
+  </div>
+  <div class="acoes-form">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+  </div>
+</form>
+
+{% endblock %}

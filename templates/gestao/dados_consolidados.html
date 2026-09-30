@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}Dados Consolidados{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Dados Consolidados</h1>
+    <p class="subtitulo">Visão geral do parque tecnológico</p>
+  </div>
+</div>
+
+<div class="grid-kpi">
+  <div class="kpi">
+    <div class="valor">R$ {{ '%.2f'|format(valor_total_parque) }}</div>
+    <div class="rotulo">Valor total do parque (aquisição)</div>
+  </div>
+  <div class="kpi azul">
+    <div class="valor">{{ contratos_ativos }}</div>
+    <div class="rotulo">Contratos de manutenção ativos</div>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Equipamentos por unidade</h2>
+    {% if por_unidade %}
+    <ul class="lista-simples">
+      {% for u in por_unidade %}
+      <li style="display:flex; justify-content:space-between;">
+        <span>{{ u.nome }}</span>
+        <span><strong>{{ u.total }}</strong> <span class="texto-mudo texto-pequeno">(R$ {{ '%.2f'|format(u.valor_total) }})</span></span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhuma unidade cadastrada.</p>
+    {% endif %}
+  </div>
+
+  <div>
+    <div class="painel">
+      <h2>Por criticidade</h2>
+      <ul class="lista-simples">
+        {% for c in por_criticidade %}
+        <li style="display:flex; justify-content:space-between;">
+          <span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[c.criticidade] }}">{{ c.criticidade }}</span>
+          <strong>{{ c.total }}</strong>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="painel">
+      <h2>Por status</h2>
+      <ul class="lista-simples">
+        {% for s in por_status %}
+        <li style="display:flex; justify-content:space-between;">
+          <span>{{ s.status.replace('_',' ') }}</span>
+          <strong>{{ s.total }}</strong>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Modelos{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🗂 Modelos</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('ativos.novo_modelo') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo Modelo</a>
+  </div>
+
+  {% if modelos %}
+  <table class="nv-grid">
+    <thead><tr><th>Modelo</th><th>Fabricante</th><th>Categoria</th><th>Padrão preferencial</th></tr></thead>
+    <tbody>
+      {% for m in modelos %}
+      <tr>
+        <td><strong>{{ m.nome }}</strong></td>
+        <td class="texto-mudo">{{ m.fabricante_nome or '—' }}</td>
+        <td class="texto-mudo">{{ m.categoria or '—' }}</td>
+        <td>{% if m.padrao_preferencial %}<span class="badge badge-verde">Sim</span>{% else %}<span class="texto-mudo">—</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum modelo cadastrado ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ modelos|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

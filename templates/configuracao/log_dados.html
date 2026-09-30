@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block titulo %}Log de Dados do Sistema{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📄 Log de Dados do Sistema</div>
+  <p class="texto-mudo texto-pequeno" style="padding:10px 14px 0;">Auditoria de ações administrativas sensíveis (gestão de usuários e dados da empresa)</p>
+
+  {% if eventos %}
+  <table class="nv-grid">
+    <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Entidade</th><th>Ação</th><th>Detalhe</th></tr></thead>
+    <tbody>
+      {% for e in eventos %}
+      <tr>
+        <td class="texto-mudo">{{ e.criado_em }}</td>
+        <td>{{ e.usuario_nome or 'sistema' }}</td>
+        <td><span class="badge badge-azul">{{ e.entidade }}</span></td>
+        <td>{{ e.acao }}</td>
+        <td class="texto-mudo">{{ e.detalhe or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum evento registrado ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>{{ eventos|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Setores{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Setores</h1>
+    <p class="subtitulo">Todos os setores/polos cadastrados, por unidade</p>
+  </div>
+  <a href="{{ url_for('cadastros.unidades') }}" class="btn btn-secundario">Gerenciar por unidade</a>
+</div>
+
+<div class="painel">
+  {% if setores %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Setor</th><th>Unidade</th><th>Cor / identificação</th><th>Equipamentos</th></tr></thead>
+      <tbody>
+        {% for s in setores %}
+        <tr>
+          <td><strong>{{ s.nome }}</strong></td>
+          <td>{{ s.unidade_nome }}</td>
+          <td class="texto-mudo">{{ s.cor or '—' }}</td>
+          <td>{{ s.total_equipamentos }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhum setor cadastrado ainda. Cadastre pela unidade correspondente.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

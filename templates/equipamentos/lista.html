@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block titulo %}Equipamentos{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📋 Equipamentos</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('equipamentos.novo') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo</a>
+    <a href="{{ url_for('ativos.busca') }}" class="nv-toolbar-btn"><span class="icone">🔍</span> Busca Avançada</a>
+    <a href="{{ url_for('ativos.contadores') }}" class="nv-toolbar-btn"><span class="icone">🔢</span> Contador</a>
+    <a href="{{ url_for('ativos.cadastros_basicos') }}" class="nv-toolbar-btn"><span class="icone">🏷</span> Propriedades</a>
+  </div>
+
+  <form method="get" class="nv-busca-painel">
+    <div class="nv-busca-grid">
+      <div class="campo">
+        <label>Equipamento</label>
+        <input type="text" name="q" value="{{ filtros.q }}" placeholder="Nome, modelo...">
+      </div>
+      <div class="campo">
+        <label>Fabricante</label>
+        <input type="text" name="fabricante" value="{{ filtros.fabricante }}">
+      </div>
+      <div class="campo">
+        <label>Unidade</label>
+        <select name="unidade_id">
+          <option value="">‹Nenhum›</option>
+          {% for u in unidades %}
+          <option value="{{ u.id }}" {{ 'selected' if filtros.unidade_id|string == u.id|string }}>{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="campo">
+        <label>Setor</label>
+        <select name="setor_id">
+          <option value="">‹Nenhum›</option>
+          {% for s in setores %}
+          <option value="{{ s.id }}" {{ 'selected' if filtros.setor_id|string == s.id|string }}>{{ s.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="campo">
+        <label>TAG</label>
+        <input type="text" name="tag" value="{{ filtros.tag }}">
+      </div>
+      <div class="campo">
+        <label>Patrimônio</label>
+        <input type="text" name="patrimonio" value="{{ filtros.patrimonio }}">
+      </div>
+      <div class="campo">
+        <label>Nº Série</label>
+        <input type="text" name="numero_serie" value="{{ filtros.numero_serie }}">
+      </div>
+      <div class="campo">
+        <label>Criticidade</label>
+        <select name="criticidade">
+          <option value="">Todas</option>
+          <option value="baixa" {{ 'selected' if filtros.criticidade == 'baixa' }}>Baixa</option>
+          <option value="media" {{ 'selected' if filtros.criticidade == 'media' }}>Média</option>
+          <option value="alta" {{ 'selected' if filtros.criticidade == 'alta' }}>Alta</option>
+          <option value="critica" {{ 'selected' if filtros.criticidade == 'critica' }}>Crítica</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Status</label>
+        <select name="status">
+          <option value="">Todos</option>
+          <option value="ativo" {{ 'selected' if filtros.status == 'ativo' }}>Ativo</option>
+          <option value="em_manutencao" {{ 'selected' if filtros.status == 'em_manutencao' }}>Em manutenção</option>
+          <option value="inativo" {{ 'selected' if filtros.status == 'inativo' }}>Inativo</option>
+          <option value="baixado" {{ 'selected' if filtros.status == 'baixado' }}>Baixado</option>
+          <option value="emprestado" {{ 'selected' if filtros.status == 'emprestado' }}>Emprestado</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Situação</label>
+        <select name="situacao">
+          <option value="ativos" {{ 'selected' if filtros.situacao == 'ativos' }}>Ativos</option>
+          <option value="inativos" {{ 'selected' if filtros.situacao == 'inativos' }}>Inativos</option>
+          <option value="todos" {{ 'selected' if filtros.situacao == 'todos' }}>Todos</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Visualizar</label>
+        <select name="visualizar">
+          <option value="100" {{ 'selected' if filtros.visualizar == '100' }}>100 Registros</option>
+          <option value="500" {{ 'selected' if filtros.visualizar == '500' }}>500 Registros</option>
+          <option value="todos" {{ 'selected' if filtros.visualizar == 'todos' }}>Todos os Registros</option>
+        </select>
+      </div>
+    </div>
+    <div class="nv-busca-rodape">
+      <span></span>
+      <button type="submit" class="btn btn-secundario">🔍 Procurar</button>
+    </div>
+  </form>
+
+  {% if equipamentos %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead>
+        <tr>
+          <th>TAG</th>
+          <th>Equipamento / Setor</th>
+          <th>Nº Série</th>
+          <th>Patrimônio</th>
+          <th>Criticidade</th>
+          <th>Situação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in equipamentos %}
+        <tr onclick="window.location='{{ url_for('equipamentos.detalhe', equipamento_id=e.id) }}'">
+          <td>{{ e.tag or '—' }}</td>
+          <td>
+            <a href="{{ url_for('equipamentos.detalhe', equipamento_id=e.id) }}"><strong>{{ e.nome }}</strong></a>
+            {% if e.label_nome %}<span class="badge" style="background:{{ e.label_cor }}22; color:{{ e.label_cor }};">{{ e.label_nome }}</span>{% endif %}
+            <br><span class="texto-mudo">{{ e.fabricante or '' }} {{ e.modelo or '' }}{% if e.unidade_nome %} · {{ e.unidade_nome }}{% endif %}{% if e.setor_nome %} / {{ e.setor_nome }}{% endif %}</span>
+          </td>
+          <td>{{ e.numero_serie or '—' }}</td>
+          <td>{{ e.patrimonio or '—' }}</td>
+          <td><span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[e.criticidade] }}">{{ e.criticidade }}</span></td>
+          <td><span class="badge badge-{{ {'ativo':'verde','em_manutencao':'laranja','inativo':'cinza','baixado':'cinza','emprestado':'azul'}[e.status] }}">{{ e.status.replace('_',' ') }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum equipamento encontrado com estes filtros.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div class="nv-legenda">
+      <span><span class="ponto" style="background:var(--verde);"></span>Em Garantia</span>
+      <span><span class="ponto" style="background:var(--azul-500);"></span>Em Garantia Estendida</span>
+    </div>
+    <div>Exibindo {{ equipamentos|length }} de {{ total_registros }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

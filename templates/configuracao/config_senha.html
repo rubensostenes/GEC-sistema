@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Configurações de Senha{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Configurações de Senha</h1>
+    <p class="subtitulo">Política de senha — aplicada de verdade na criação e troca de senhas</p>
+  </div>
+</div>
+
+<form method="post" class="painel" style="max-width:480px;">
+  <div class="campo">
+    <label for="comprimento_minimo">Comprimento mínimo</label>
+    <input type="number" id="comprimento_minimo" name="comprimento_minimo" min="6" value="{{ config.comprimento_minimo if config else 6 }}">
+  </div>
+  <label class="checkbox" style="margin-top:14px;">
+    <input type="checkbox" name="exigir_numero" {{ 'checked' if config and config.exigir_numero }}>
+    Exigir ao menos um número
+  </label>
+  <label class="checkbox" style="margin-top:8px;">
+    <input type="checkbox" name="exigir_maiusculo" {{ 'checked' if config and config.exigir_maiusculo }}>
+    Exigir ao menos uma letra maiúscula
+  </label>
+  <div class="campo" style="margin-top:14px;">
+    <label for="dias_expiracao">Expiração da senha (dias, opcional)</label>
+    <input type="number" id="dias_expiracao" name="dias_expiracao" value="{{ config.dias_expiracao if config and config.dias_expiracao else '' }}">
+    <span class="ajuda">Guardado, mas ainda não força a troca automática — precisaria de uma rotina em segundo plano.</span>
+  </div>
+  <div class="acoes-form">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+  </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}GEC{% endblock %} · Gestão de Engenharia Clínica</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="layout">
+
+    <header class="nv-topo">
+      <div class="nv-topo-esq">
+        <a href="{{ url_for('dashboard.index') }}" class="nv-logo"><span class="g">G</span><span class="ec">EC</span></a>
+        <a href="{{ url_for('cadastros.unidades') }}" class="nv-contexto">
+          {{ nome_organizacao }} <span class="seta">▾</span>
+        </a>
+      </div>
+      <div class="nv-topo-dir">
+        <form class="nv-busca" action="{{ url_for('equipamentos.lista') }}" method="get">
+          <input type="text" name="q" placeholder="Buscar equipamento...">
+        </form>
+        {% if current_user.is_authenticated %}
+        {% if current_user.is_admin %}
+        <div class="nv-tem-submenu">
+          <div class="nv-icone" title="Configuração" style="font-size:1.1rem;">⚙</div>
+          <div class="nv-submenu nv-submenu-direita nv-submenu-2col">
+            <a href="{{ url_for('cadastros.usuarios') }}">Usuários</a>
+            <a href="{{ url_for('configuracao.grupos_usuarios') }}">Grupos de Usuários</a>
+            <a href="{{ url_for('configuracao.empresa') }}">Dados da Empresa</a>
+            <a href="{{ url_for('configuracao.alertas') }}">Alerta Geral para Usuários</a>
+            <a href="{{ url_for('configuracao.unidades_medida') }}">Unidades de Medidas</a>
+            <a href="{{ url_for('configuracao.feriados') }}">Feriados</a>
+            <a href="{{ url_for('configuracao.labels') }}">Labels</a>
+            <a href="{{ url_for('configuracao.parametros_locais') }}">Parâmetros Locais</a>
+            <a href="{{ url_for('configuracao.parametros_globais') }}">Parâmetros Globais</a>
+            <a href="{{ url_for('configuracao.parametros_calibracao') }}">Parâmetros de Calibração</a>
+            <a href="{{ url_for('configuracao.config_senha') }}">Configurações de Senha</a>
+            <a href="{{ url_for('configuracao.config_listagem') }}">Configuração de Listagem</a>
+            <a href="{{ url_for('configuracao.licencas') }}">Licenças em Uso</a>
+            <a href="{{ url_for('configuracao.acessos_falhos') }}">Acessos Falhos</a>
+            <a href="{{ url_for('configuracao.log_dados') }}">Log de Dados do Sistema</a>
+            <a href="{{ url_for('configuracao.log_acessos') }}">Log de Acessos ao Sistema</a>
+          </div>
+        </div>
+        {% endif %}
+        <div class="nv-tem-submenu">
+          <div class="nv-icone" title="Ajuda" style="font-size:1.1rem;">?</div>
+          <div class="nv-submenu nv-submenu-direita">
+            <a href="{{ url_for('ajuda.manual') }}">Manual do Usuário</a>
+            <a href="{{ url_for('ajuda.teste_velocidade') }}">Teste de Velocidade</a>
+            <a href="{{ url_for('ajuda.documentacao') }}">Documentação</a>
+            <a href="{{ url_for('ajuda.area_cliente') }}">Área do Cliente</a>
+            <a href="{{ url_for('ajuda.sobre') }}">Sobre</a>
+            <a href="{{ url_for('ajuda.ideias') }}">Banco de Ideias</a>
+          </div>
+        </div>
+        <div class="nv-tem-submenu">
+          <div class="nv-avatar" title="{{ current_user.nome }} ({{ current_user.cargo_label() }})">{{ current_user.iniciais }}</div>
+          <div class="nv-submenu nv-submenu-direita">
+            <div style="padding:10px 16px 8px; border-bottom:1px solid var(--nv-borda-escura); margin-bottom:4px;">
+              <strong style="color:#fff; font-size:0.85rem;">{{ current_user.nome }}</strong><br>
+              <span class="texto-mudo" style="font-size:0.76rem;">{{ current_user.cargo_label() }}</span>
+            </div>
+            <a href="{{ url_for('perfil.trocar_empresa') }}">Trocar de Empresa</a>
+            <a href="{{ url_for('perfil.notificacoes') }}">Configurações de Notificações</a>
+            <a href="{{ url_for('perfil.meu_perfil') }}">Meu Perfil</a>
+            <a href="{{ url_for('perfil.gec_sign') }}">GEC Sign</a>
+            <a href="{{ url_for('perfil.minha_agenda') }}">Minha Agenda</a>
+            <a href="{{ url_for('perfil.minhas_tarefas') }}">Minhas Tarefas</a>
+            <a href="{{ url_for('perfil.cursos') }}">Meus Cursos</a>
+            <a href="{{ url_for('dashboard.index') }}">Atalhos</a>
+            <a href="{{ url_for('perfil.agenda_telefonica') }}">Agenda Telefônica</a>
+            <a href="{{ url_for('perfil.chat') }}">Chat Interno</a>
+            <a href="{{ url_for('perfil.tokens') }}">Tokens de Acesso Pessoal</a>
+            <a href="{{ url_for('auth.logout') }}">Sair</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </header>
+
+    {% if current_user.is_authenticated %}
+    {% set endpoints_gestao = ['dashboard.indicadores','cadastros.unidades','cadastros.nova_unidade','cadastros.usuarios',
+        'cadastros.alternar_status_usuario','cadastros.redefinir_senha','gestao.setores','gestao.planos_manutencao',
+        'gestao.procedimentos','gestao.vincular_procedimentos','gestao.fornecedores','gestao.novo_fornecedor',
+        'gestao.editar_fornecedor','gestao.contratos','gestao.novo_contrato','gestao.colaboradores',
+        'gestao.novo_colaborador','gestao.editar_colaborador','gestao.horas_trabalhadas','gestao.manuais',
+        'gestao.dados_consolidados','gestao.agendador_relatorios','gestao.sensores','gestao.relatorios_gerenciais',
+        'gestao.gec_maps','gestao.cadastros_basicos'] %}
+    <nav class="nv-menu">
+      <div class="nv-tem-submenu">
+        <a href="{{ url_for('dashboard.indicadores') }}" class="nv-menu-link {{ 'ativo' if request.endpoint in endpoints_gestao }}">Gestão <span class="seta">▾</span></a>
+        <div class="nv-submenu nv-submenu-2col">
+          <a href="{{ url_for('dashboard.indicadores') }}">Indicadores</a>
+          <a href="{{ url_for('gestao.setores') }}">Setores</a>
+          <a href="{{ url_for('gestao.planos_manutencao') }}">Planos de Manutenção</a>
+          <a href="{{ url_for('gestao.procedimentos') }}">Procedimentos de Manutenção</a>
+          <a href="{{ url_for('gestao.vincular_procedimentos') }}">Vincular Procedimentos a Modelos</a>
+          <a href="{{ url_for('gestao.fornecedores') }}">Fornecedores</a>
+          <a href="{{ url_for('gestao.contratos') }}">Contratos de Manutenção</a>
+          <a href="{{ url_for('gestao.contratos', filtro='vencidos') }}">Contratos Vencidos ou a Vencer</a>
+          <a href="{{ url_for('gestao.colaboradores') }}">Colaboradores</a>
+          <a href="{{ url_for('gestao.horas_trabalhadas') }}">Colaboradores — Horas Trabalhadas</a>
+          <a href="{{ url_for('gestao.manuais') }}">Manuais</a>
+          <a href="{{ url_for('gestao.dados_consolidados') }}">Dados Consolidados</a>
+          <a href="{{ url_for('gestao.agendador_relatorios') }}">Agendador de Relatórios</a>
+          <a href="{{ url_for('gestao.sensores') }}">Sensores</a>
+          <a href="{{ url_for('gestao.relatorios_gerenciais') }}">Relatórios Gerenciais</a>
+          <a href="{{ url_for('gestao.gec_maps') }}">GEC Maps</a>
+          <a href="{{ url_for('gestao.cadastros_basicos') }}">Cadastros Básicos</a>
+          {% if current_user.is_admin %}
+          <a href="{{ url_for('cadastros.usuarios') }}">Usuários</a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="nv-tem-submenu">
+        <a href="{{ url_for('equipamentos.lista') }}" class="nv-menu-link {{ 'ativo' if request.blueprint in ['equipamentos','ativos'] }}">Equipamentos <span class="seta">▾</span></a>
+        <div class="nv-submenu nv-submenu-2col">
+          <a href="{{ url_for('equipamentos.lista') }}">Equipamentos</a>
+          <a href="{{ url_for('ativos.busca') }}">Busca de Equipamentos</a>
+          <a href="{{ url_for('ativos.plano_descricoes') }}">Plano de Descrições</a>
+          <a href="{{ url_for('ativos.fabricantes') }}">Fabricantes</a>
+          <a href="{{ url_for('ativos.modelos') }}">Modelos</a>
+          <a href="{{ url_for('ativos.novos_modelos_fabricantes') }}">Novos Modelos e Fabricantes</a>
+          <a href="{{ url_for('ativos.custo_substituicao') }}">Custo de Substituição</a>
+          <a href="{{ url_for('ativos.reservas') }}">Reserva de Equipamentos</a>
+          <a href="{{ url_for('ativos.transportes') }}">Transporte de Equipamentos</a>
+          <a href="{{ url_for('ativos.novo_transporte') }}">Novo Transporte de Equipamentos</a>
+          <a href="{{ url_for('ativos.terceiros') }}">Equipamento de Terceiros</a>
+          <a href="{{ url_for('equipamentos.novo') }}">Registrar Entrada de Equipamentos</a>
+          <a href="{{ url_for('ativos.padroes_preferenciais') }}">Padrões Preferenciais</a>
+          <a href="{{ url_for('ativos.rastreabilidade_padroes') }}">Rastreabilidade dos Padrões</a>
+          <a href="{{ url_for('ativos.contadores') }}">Atualizar Contadores</a>
+          <a href="{{ url_for('ativos.sem_data_instalacao') }}">Equipamentos sem Data de Instalação</a>
+          <a href="{{ url_for('ativos.cadastros_basicos') }}">Cadastros Básicos</a>
+        </div>
+      </div>
+      <div class="nv-tem-submenu">
+        <a href="{{ url_for('ordens_servico.lista') }}" class="nv-menu-link {{ 'ativo' if request.blueprint == 'ordens_servico' }}">Ordens de Serviço <span class="seta">▾</span></a>
+        <div class="nv-submenu nv-submenu-2col">
+          <a href="{{ url_for('ordens_servico.lista') }}">Ordens de Serviço</a>
+          <a href="{{ url_for('ordens_servico.lista_gec') }}">Ordens de Serviço GEC</a>
+          <a href="{{ url_for('ordens_servico.rapida') }}">Ordem de Serviço Rápida</a>
+          <a href="{{ url_for('ordens_servico.nova') }}">Abrir Ordem de Serviço</a>
+          <a href="{{ url_for('ordens_servico.manutencoes_previstas') }}">Buscar/Gerar Manutenções Previstas</a>
+          <a href="{{ url_for('ordens_servico.minhas_requisicoes') }}">Minhas Requisições de Serviço</a>
+          <a href="{{ url_for('ordens_servico.administrar_requisicoes') }}">Administrar Requisições de Serviço</a>
+          <a href="{{ url_for('ordens_servico.monitor') }}">Monitor de Atendimento</a>
+          <a href="{{ url_for('ordens_servico.monitor_gec') }}">Monitor de Atendimento GEC</a>
+          <a href="{{ url_for('ordens_servico.agenda_equipe') }}">Agenda da Equipe</a>
+          <a href="{{ url_for('ordens_servico.pendencias') }}">Pendência das Ordens de Serviço</a>
+          <a href="{{ url_for('ordens_servico.certificados') }}">Listagem dos Certificados</a>
+          <a href="{{ url_for('ordens_servico.certificados_aguardando_analise') }}">Certificados Aguardando Análise</a>
+          <a href="{{ url_for('ordens_servico.servicos_externos_orcamento') }}">Serviços Externos Aguardando Aprovação do Orçamento</a>
+          <a href="{{ url_for('ordens_servico.kanban') }}">Quadro Kanban</a>
+          <a href="{{ url_for('ordens_servico.auditoria') }}">Auditoria das Ordens de Serviço</a>
+          <a href="{{ url_for('ordens_servico.cadastros_basicos') }}">Cadastros Básicos</a>
+        </div>
+      </div>
+      <div class="nv-tem-submenu">
+        <a href="{{ url_for('cadastros.estoque') }}" class="nv-menu-link {{ 'ativo' if request.blueprint in ['cadastros','estoque'] and request.endpoint != 'cadastros.usuarios' }}">Estoque <span class="seta">▾</span></a>
+        <div class="nv-submenu nv-submenu-2col">
+          <a href="{{ url_for('cadastros.estoque') }}">Produtos</a>
+          <a href="{{ url_for('estoque.solicitacoes') }}">Solicitações de Compras</a>
+          <a href="{{ url_for('estoque.pedidos') }}">Pedidos de Compra</a>
+          <a href="{{ url_for('estoque.entradas') }}">Entradas/Notas Fiscais</a>
+          <a href="{{ url_for('estoque.transferencias') }}">Transferências entre Almoxarifados</a>
+          <a href="{{ url_for('estoque.baixas') }}">Baixas Diversas</a>
+          <a href="{{ url_for('estoque.inventarios') }}">Inventários</a>
+          <a href="{{ url_for('estoque.cadastros_basicos') }}">Cadastros Básicos</a>
+          <a href="{{ url_for('estoque.relatorios') }}">Relatórios</a>
+        </div>
+      </div>
+      <div class="nv-tem-submenu">
+        <a href="{{ url_for('financeiro.resumo') }}" class="nv-menu-link {{ 'ativo' if request.blueprint == 'financeiro' and request.endpoint != 'financeiro.consumo' }}">Financeiro <span class="seta">▾</span></a>
+        <div class="nv-submenu">
+          <a href="{{ url_for('financeiro.centros_custo') }}">Centro de Custos/Lucros</a>
+          <a href="{{ url_for('financeiro.cadastros_basicos') }}">Cadastros Básicos</a>
+          <a href="{{ url_for('financeiro.relatorios') }}">Relatórios</a>
+        </div>
+      </div>
+      <div class="nv-tem-submenu">
+        <a href="{{ url_for('consumo.tabelas') }}" class="nv-menu-link {{ 'ativo' if request.blueprint == 'consumo' }}">Consumo <span class="seta">▾</span></a>
+        <div class="nv-submenu">
+          <a href="{{ url_for('consumo.grupos') }}">Grupos de Tabelas de Acompanhamento</a>
+          <a href="{{ url_for('consumo.tabelas') }}">Tabelas de Acompanhamento de Consumo</a>
+          <a href="{{ url_for('consumo.informacoes') }}">Informações de Consumo</a>
+          <a href="{{ url_for('consumo.metas') }}">Metas de Consumo</a>
+          <a href="{{ url_for('consumo.relatorios') }}">Relatórios</a>
+        </div>
+      </div>
+    </nav>
+    {% endif %}
+
+    <div class="nv-corpo">
+      {% if current_user.is_authenticated and request.endpoint == 'dashboard.index' %}
+      <aside class="nv-trilha">
+        <button class="ativo" title="Atalhos" data-painel="painel-atalhos">★</button>
+        <button title="Dashboard" data-painel="painel-dashboard">▦</button>
+      </aside>
+      <aside class="nv-atalhos" id="painel-atalhos">
+        <h3>Atalhos</h3>
+        <form action="{{ url_for('equipamentos.lista') }}" method="get">
+          <input type="text" name="q" placeholder="Equipamento">
+          <button type="submit" title="Buscar">🔍</button>
+        </form>
+        <form action="{{ url_for('ordens_servico.lista') }}" method="get">
+          <input type="text" name="q" placeholder="OS">
+          <button type="submit" title="Buscar">🔍</button>
+        </form>
+        <a class="nv-botao-atalho" href="{{ url_for('ordens_servico.lista', status='aberta') }}">Ordens de Serviço Abertas</a>
+        <a class="nv-botao-atalho" href="{{ url_for('ordens_servico.lista', atrasada=1) }}">Ordens de Serviço Atrasadas</a>
+        <a class="nv-link-agenda" href="{{ url_for('ordens_servico.lista', minhas=1) }}">📅 Minhas ordens de serviço</a>
+      </aside>
+      <aside class="nv-atalhos oculto" id="painel-dashboard">
+        <h3>Dashboard — modelos para uso</h3>
+        <a class="nv-botao-atalho" href="{{ url_for('dashboard.indicadores') }}">📈 Indicadores</a>
+        <a class="nv-botao-atalho" href="{{ url_for('gestao.dados_consolidados') }}">🧮 Dados Consolidados</a>
+        <a class="nv-botao-atalho" href="{{ url_for('ordens_servico.monitor') }}">🛠 Monitor de Atendimento</a>
+        <a class="nv-botao-atalho" href="{{ url_for('ordens_servico.kanban') }}">🗂 Quadro Kanban de OS</a>
+        <a class="nv-botao-atalho" href="{{ url_for('financeiro.resumo') }}">💰 Resumo Financeiro</a>
+        <a class="nv-botao-atalho" href="{{ url_for('consumo.relatorios') }}">🔌 Relatório de Consumo</a>
+      </aside>
+      <script>
+        document.querySelectorAll('.nv-trilha button').forEach(function (botao) {
+          botao.addEventListener('click', function () {
+            document.querySelectorAll('.nv-trilha button').forEach(function (b) { b.classList.remove('ativo'); });
+            botao.classList.add('ativo');
+            document.querySelectorAll('.nv-corpo > .nv-atalhos').forEach(function (painel) { painel.classList.add('oculto'); });
+            document.getElementById(botao.dataset.painel).classList.remove('oculto');
+          });
+        });
+      </script>
+      {% endif %}
+
+      <main class="conteudo">
+        {% if alertas_ativos %}
+        <div class="flashes">
+          {% for alerta in alertas_ativos %}
+          <div class="flash flash-aviso"><strong>{{ alerta.titulo }}:</strong> {{ alerta.mensagem }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+          {% if mensagens %}
+          <div class="flashes">
+            {% for categoria, mensagem in mensagens %}
+              <div class="flash flash-{{ categoria }}">{{ mensagem }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block conteudo %}{% endblock %}
+      </main>
+    </div>
+
+  </div>
+</body>
+</html>

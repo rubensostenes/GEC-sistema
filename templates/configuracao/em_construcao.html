@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ titulo }}</h1>
+  </div>
+</div>
+
+<div class="painel" style="text-align:center; padding:50px 30px;">
+  <div style="font-size:2rem; margin-bottom:10px;">🚧</div>
+  <h2>Em construção</h2>
+  <p class="texto-mudo" style="max-width:480px; margin:8px auto 0;">{{ descricao }}</p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}Feriados{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <h1>Feriados</h1>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo feriado</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="data">Data *</label>
+        <input type="date" id="data" name="data" required>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="descricao">Descrição *</label>
+        <input type="text" id="descricao" name="descricao" required placeholder="Ex: Dia do Trabalho">
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="unidade_id">Unidade (deixe em branco para nacional)</label>
+        <select id="unidade_id" name="unidade_id">
+          <option value="">— Nacional (todas as unidades) —</option>
+          {% for u in unidades %}
+          <option value="{{ u.id }}">{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="nv-janela" style="margin-bottom:0;">
+    <div class="nv-janela-titulo">📅 Cadastrados</div>
+    {% if feriados %}
+    <table class="nv-grid">
+      <thead><tr><th>Descrição</th><th>Data</th><th>Unidade</th></tr></thead>
+      <tbody>
+        {% for f in feriados %}
+        <tr>
+          <td>{{ f.descricao }}</td>
+          <td class="texto-mudo">{{ f.data }}</td>
+          <td class="texto-mudo">{{ f.unidade_nome or 'Nacional' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vazio" style="padding:20px;">Nenhum feriado cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

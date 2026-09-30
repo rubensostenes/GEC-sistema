@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block titulo %}Metas de Consumo{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Metas de Consumo</h1>
+    <p class="subtitulo">Meta de consumo por tabela e período, para comparar com o realizado</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Nova meta</h2>
+    {% if tabelas %}
+    <form method="post">
+      <div class="form-grid">
+        <div class="campo span-2">
+          <label for="tabela_id">Tabela</label>
+          <select id="tabela_id" name="tabela_id" required>
+            {% for t in tabelas %}
+            <option value="{{ t.id }}">{{ t.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="campo">
+          <label for="periodo">Período (mês)</label>
+          <input type="month" id="periodo" name="periodo" required>
+        </div>
+        <div class="campo">
+          <label for="valor_meta">Meta</label>
+          <input type="number" step="0.01" id="valor_meta" name="valor_meta" required>
+        </div>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar meta</button>
+      </div>
+    </form>
+    {% else %}
+    <p class="vazio">Cadastre uma <a href="{{ url_for('consumo.tabelas') }}">tabela de acompanhamento</a> antes de definir metas.</p>
+    {% endif %}
+  </div>
+
+  <div class="painel">
+    <h2>Metas cadastradas</h2>
+    {% if metas %}
+    <div class="tabela-wrap">
+      <table class="tabela">
+        <thead><tr><th>Tabela</th><th>Período</th><th>Meta</th></tr></thead>
+        <tbody>
+          {% for m in metas %}
+          <tr>
+            <td>{{ m.tabela_nome }}</td>
+            <td class="texto-mudo">{{ m.periodo }}</td>
+            <td><strong>{{ m.valor_meta }}</strong> {{ m.unidade_medida }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="vazio">Nenhuma meta cadastrada ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

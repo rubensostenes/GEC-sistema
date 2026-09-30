@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block titulo %}Setores · {{ unidade.nome }}{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📍 Setores — {{ unidade.nome }} <a href="{{ url_for('cadastros.unidades') }}" style="margin-left:auto; font-size:0.8rem;">← Voltar para unidades</a></div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('cadastros.novo_setor', unidade_id=unidade.id) }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo Grupo/Setor</a>
+  </div>
+
+  {% if setores %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Nome</th><th>Código</th><th>Responsável</th><th>Almoxarifado</th><th></th></tr></thead>
+      <tbody>
+        {% for s in setores %}
+        <tr onclick="window.location='{{ url_for('cadastros.editar_setor', setor_id=s.id) }}'">
+          <td><strong>{{ s.nome }}</strong>{% if s.cor %} <span class="texto-mudo">({{ s.cor }})</span>{% endif %}</td>
+          <td class="texto-mudo">{{ s.codigo or '—' }}</td>
+          <td class="texto-mudo">{{ s.responsavel_nome or '—' }}</td>
+          <td>{% if s.eh_almoxarifado %}<span class="badge badge-azul">Sim</span>{% else %}<span class="texto-mudo">—</span>{% endif %}</td>
+          <td><a href="{{ url_for('cadastros.editar_setor', setor_id=s.id) }}" class="btn btn-sm btn-secundario">Editar</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum setor cadastrado para esta unidade.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ setores|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

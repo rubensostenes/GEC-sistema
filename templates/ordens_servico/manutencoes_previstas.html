@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titulo %}Manutenções Previstas{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Buscar / Gerar Manutenções Previstas</h1>
+    <p class="subtitulo">Equipamentos com preventiva ou calibração vencida ou a vencer em 30 dias</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Preventivas ({{ preventivas|length }})</h2>
+    {% if preventivas %}
+    <div class="tabela-wrap">
+      <table class="tabela">
+        <thead><tr><th>Equipamento</th><th>Unidade</th><th>Data prevista</th><th></th></tr></thead>
+        <tbody>
+          {% for p in preventivas %}
+          <tr>
+            <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=p.id) }}">{{ p.nome }}</a></td>
+            <td class="texto-mudo">{{ p.unidade_nome or '—' }}</td>
+            <td>{{ p.data }}</td>
+            <td>
+              <form method="post" action="{{ url_for('ordens_servico.gerar_manutencao', equipamento_id=p.id, tipo='preventiva') }}">
+                <button type="submit" class="btn btn-sm btn-primario">Gerar OS</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="vazio">Nenhuma preventiva vencida ou a vencer.</p>
+    {% endif %}
+  </div>
+
+  <div class="painel">
+    <h2>Calibrações ({{ calibracoes|length }})</h2>
+    {% if calibracoes %}
+    <div class="tabela-wrap">
+      <table class="tabela">
+        <thead><tr><th>Equipamento</th><th>Unidade</th><th>Data prevista</th><th></th></tr></thead>
+        <tbody>
+          {% for c in calibracoes %}
+          <tr>
+            <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=c.id) }}">{{ c.nome }}</a></td>
+            <td class="texto-mudo">{{ c.unidade_nome or '—' }}</td>
+            <td>{{ c.data }}</td>
+            <td>
+              <form method="post" action="{{ url_for('ordens_servico.gerar_manutencao', equipamento_id=c.id, tipo='calibracao') }}">
+                <button type="submit" class="btn btn-sm btn-primario">Gerar OS</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="vazio">Nenhuma calibração vencida ou a vencer.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}GEC Sign{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>GEC Sign</h1>
+    <p class="subtitulo">Suas assinaturas eletrônicas simples em ordens de serviço</p>
+  </div>
+</div>
+
+<div class="painel" style="border-left:4px solid var(--laranja);">
+  <p class="texto-mudo texto-pequeno" style="margin:0;">
+    Isto é uma confirmação eletrônica simples (nome digitado + data/hora + IP), não uma assinatura digital com certificado ICP-Brasil.
+    Para valor jurídico de assinatura digital, seria necessário integrar um provedor de certificação.
+  </p>
+</div>
+
+<div class="painel">
+  {% if assinaturas %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>OS</th><th>Nome declarado</th><th>Data/Hora</th></tr></thead>
+      <tbody>
+        {% for a in assinaturas %}
+        <tr>
+          <td><a href="{{ url_for('ordens_servico.detalhe', ordem_id=a.ordem_servico_id) }}">{{ a.os_numero }}</a></td>
+          <td>{{ a.nome_declarado }}</td>
+          <td class="texto-mudo">{{ a.criado_em }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Você ainda não assinou nenhuma ordem de serviço. Isso é feito na tela de detalhe de cada OS.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

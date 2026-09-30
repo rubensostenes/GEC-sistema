@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if plano else 'Novo' }} Plano de Manutenção{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">📅 {{ 'Editar Plano de Manutenção' if plano else 'Novo Plano de Manutenção' }}</div>
+</div>
+
+{% if plano %}
+<div style="display:flex; gap:10px; margin-bottom:12px;">
+  <a href="{{ url_for('ordens_servico.lista', q=plano.nome) }}" class="btn btn-secundario">Ver histórico de OS geradas</a>
+  <a href="{{ url_for('gestao.gerar_os_de_plano', plano_id=plano.id) }}" class="btn btn-primario">+ Gerar OS deste plano</a>
+</div>
+{% endif %}
+
+<form method="post" class="nv-form">
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Geral</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required value="{{ plano.nome if plano else '' }}">
+    </div>
+    <div class="campo">
+      <label for="oficina">Oficina</label>
+      <input type="text" id="oficina" name="oficina" value="{{ plano.oficina if plano else 'Engenharia Clínica' }}">
+    </div>
+    <div class="campo">
+      <label for="abrangencia">Abrangência</label>
+      <select id="abrangencia" name="abrangencia">
+        <option value="equipamentos" {{ 'selected' if not plano or plano.abrangencia == 'equipamentos' }}>Equipamentos</option>
+        <option value="setores" {{ 'selected' if plano and plano.abrangencia == 'setores' }}>Setores</option>
+        <option value="predial" {{ 'selected' if plano and plano.abrangencia == 'predial' }}>Predial</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="categoria_equipamento">Categoria de equipamento alvo</label>
+      <input type="text" id="categoria_equipamento" name="categoria_equipamento" placeholder="Ex: Facoemulsificador" value="{{ (plano.categoria_equipamento or '') if plano else '' }}">
+    </div>
+    <div class="campo">
+      <label class="checkbox">
+        <input type="checkbox" name="pausado" {{ 'checked' if plano and plano.pausado }}>
+        Pausado
+      </label>
+    </div>
+    <div class="campo">
+      <label class="checkbox">
+        <input type="checkbox" name="ativo" {{ 'checked' if not plano or plano.ativo }}>
+        Ativo
+      </label>
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Dados da ordem de serviço</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="tipo_manutencao">Tipo de manutenção</label>
+      <select id="tipo_manutencao" name="tipo_manutencao" required>
+        <option value="preventiva" {{ 'selected' if not plano or plano.tipo_manutencao == 'preventiva' }}>Preventiva</option>
+        <option value="calibracao" {{ 'selected' if plano and plano.tipo_manutencao == 'calibracao' }}>Calibração</option>
+        <option value="inspecao" {{ 'selected' if plano and plano.tipo_manutencao == 'inspecao' }}>Inspeção</option>
+        <option value="inspecao_tecnica" {{ 'selected' if plano and plano.tipo_manutencao == 'inspecao_tecnica' }}>Inspeção Técnica</option>
+        <option value="inventario" {{ 'selected' if plano and plano.tipo_manutencao == 'inventario' }}>Inventário</option>
+        <option value="seguranca_eletrica" {{ 'selected' if plano and plano.tipo_manutencao == 'seguranca_eletrica' }}>Segurança Elétrica</option>
+        <option value="qualificacao" {{ 'selected' if plano and plano.tipo_manutencao == 'qualificacao' }}>Qualificação</option>
+        <option value="pesquisa_clinica" {{ 'selected' if plano and plano.tipo_manutencao == 'pesquisa_clinica' }}>Pesquisa Clínica</option>
+        <option value="reuniao_estrategica" {{ 'selected' if plano and plano.tipo_manutencao == 'reuniao_estrategica' }}>Reunião Estratégica</option>
+        <option value="ronda" {{ 'selected' if plano and plano.tipo_manutencao == 'ronda' }}>Ronda</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="prioridade">Prioridade</label>
+      <select id="prioridade" name="prioridade" required>
+        <option value="baixa" {{ 'selected' if plano and plano.prioridade == 'baixa' }}>Baixa</option>
+        <option value="media" {{ 'selected' if not plano or plano.prioridade == 'media' }}>Média</option>
+        <option value="alta" {{ 'selected' if plano and plano.prioridade == 'alta' }}>Alta</option>
+        <option value="critica" {{ 'selected' if plano and plano.prioridade == 'critica' }}>Crítica</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="responsavel_id">Responsável</label>
+      <select id="responsavel_id" name="responsavel_id">
+        <option value="">—</option>
+        {% for u in usuarios %}
+        <option value="{{ u.id }}" {{ 'selected' if plano and plano.responsavel_id == u.id }}>{{ u.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="periodicidade_meses">Periodicidade (meses)</label>
+      <input type="number" id="periodicidade_meses" name="periodicidade_meses" required value="{{ plano.periodicidade_meses if plano else 12 }}">
+    </div>
+    <div class="campo">
+      <label for="pendencia">Pendência</label>
+      <input type="text" id="pendencia" name="pendencia" value="{{ (plano.pendencia or '') if plano else '' }}">
+    </div>
+    <div class="campo">
+      <label for="ocorrencia">Ocorrência</label>
+      <input type="text" id="ocorrencia" name="ocorrencia" value="{{ (plano.ocorrencia or '') if plano else '' }}">
+    </div>
+    <div class="campo">
+      <label for="causa">Causa</label>
+      <input type="text" id="causa" name="causa" value="{{ (plano.causa or '') if plano else '' }}">
+    </div>
+    <div class="campo">
+      <label for="procedimento_id">Procedimento (checklist)</label>
+      <select id="procedimento_id" name="procedimento_id">
+        <option value="">—</option>
+        {% for p in procedimentos %}
+        <option value="{{ p.id }}" {{ 'selected' if plano and plano.procedimento_id == p.id }}>{{ p.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo span-2">
+      <label class="checkbox">
+        <input type="checkbox" name="exigir_checklist" {{ 'checked' if plano and plano.exigir_checklist }}>
+        Exigir checklist preenchido para fechamento da Ordem de Serviço
+      </label>
+    </div>
+    <div class="campo span-2 alinhar-topo">
+      <label for="observacao">Observação</label>
+      <textarea id="observacao" name="observacao">{{ (plano.observacao or '') if plano else '' }}</textarea>
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Serviço externo</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="fornecedor_id">Fornecedor</label>
+      <select id="fornecedor_id" name="fornecedor_id">
+        <option value="">—</option>
+        {% for f in fornecedores %}
+        <option value="{{ f.id }}" {{ 'selected' if plano and plano.fornecedor_id == f.id }}>{{ f.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="contrato_id">Contrato</label>
+      <select id="contrato_id" name="contrato_id">
+        <option value="">—</option>
+        {% for c in contratos %}
+        <option value="{{ c.id }}" {{ 'selected' if plano and plano.contrato_id == c.id }}>{{ c.descricao }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo span-2">
+      <label class="checkbox">
+        <input type="checkbox" name="abrir_os_externa" {{ 'checked' if plano and plano.abrir_os_externa }}>
+        Abrir OS como externa
+      </label>
+    </div>
+  </div>
+
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar plano</button>
+    <a href="{{ url_for('gestao.planos_manutencao') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

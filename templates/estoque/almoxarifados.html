@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titulo %}Almoxarifados{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <h1>Almoxarifados</h1>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo almoxarifado</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="nome">Nome *</label>
+        <input type="text" id="nome" name="nome" required>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="unidade_id">Unidade</label>
+        <select id="unidade_id" name="unidade_id">
+          <option value="">—</option>
+          {% for u in unidades %}
+          <option value="{{ u.id }}">{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+  <div class="painel">
+    <h2>Cadastrados</h2>
+    {% if almoxarifados %}
+    <ul class="lista-simples">
+      {% for a in almoxarifados %}
+      <li>{{ a.nome }} <span class="texto-mudo texto-pequeno">({{ a.unidade_nome or 'sem unidade' }})</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum almoxarifado cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

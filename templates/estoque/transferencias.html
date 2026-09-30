@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block titulo %}Transferências entre Almoxarifados{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">🔀 Transferências entre Almoxarifados</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('estoque.nova_transferencia') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Nova Transferência</a>
+  </div>
+
+  {% if transferencias %}
+  <table class="nv-grid">
+    <thead><tr><th>Peça</th><th>Quantidade</th><th>Origem</th><th>Destino</th><th>Data</th><th>Responsável</th></tr></thead>
+    <tbody>
+      {% for t in transferencias %}
+      <tr>
+        <td>{{ t.peca_nome }}</td>
+        <td>{{ t.quantidade }}</td>
+        <td class="texto-mudo">{{ t.origem_nome or '—' }}</td>
+        <td class="texto-mudo">{{ t.destino_nome or '—' }}</td>
+        <td>{{ t.data_transferencia }}</td>
+        <td class="texto-mudo">{{ t.responsavel or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma transferência registrada ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ transferencias|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

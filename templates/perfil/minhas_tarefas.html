@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Minhas Tarefas{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Minhas Tarefas</h1>
+    <p class="subtitulo">Ordens de serviço abertas sob sua responsabilidade, por prioridade</p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if ordens %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Prioridade</th><th>OS</th><th>Equipamento</th><th>Status</th><th>Abertura</th></tr></thead>
+      <tbody>
+        {% for os in ordens %}
+        <tr>
+          <td><span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[os.prioridade] }}">{{ os.prioridade }}</span></td>
+          <td><a href="{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}">{{ os.numero }}</a></td>
+          <td class="texto-mudo">{{ os.equipamento_nome or '—' }}</td>
+          <td><span class="badge badge-azul">{{ os.status.replace('_',' ') }}</span></td>
+          <td class="texto-mudo">{{ os.data_abertura[:10] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhuma tarefa pendente sob sua responsabilidade. 🎉</p>
+  {% endif %}
+</div>
+
+{% endblock %}

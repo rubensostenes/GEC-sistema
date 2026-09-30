@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block titulo %}Alerta Geral{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Alerta Geral para Usuários</h1>
+    <p class="subtitulo">Mensagem exibida no topo do sistema para todos os usuários logados</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo alerta</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="titulo">Título *</label>
+        <input type="text" id="titulo" name="titulo" required>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="mensagem">Mensagem *</label>
+        <textarea id="mensagem" name="mensagem" required></textarea>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Publicar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="painel">
+    <h2>Alertas cadastrados</h2>
+    {% if alertas %}
+    <ul class="lista-simples">
+      {% for a in alertas %}
+      <li style="display:flex; justify-content:space-between; align-items:center;">
+        <span>
+          <strong>{{ a.titulo }}</strong><br>
+          <span class="texto-mudo texto-pequeno">{{ a.mensagem }}</span>
+        </span>
+        <form method="post" action="{{ url_for('configuracao.alternar_alerta', alerta_id=a.id) }}">
+          <button type="submit" class="btn btn-sm {{ 'btn-secundario' if a.ativo else 'btn-sucesso' }}">{{ 'Desativar' if a.ativo else 'Ativar' }}</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum alerta cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Auditoria das Ordens de Serviço{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Auditoria das Ordens de Serviço</h1>
+    <p class="subtitulo">Últimas 200 mudanças de status registradas no sistema</p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if eventos %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Data/Hora</th><th>OS</th><th>De</th><th>Para</th><th>Usuário</th><th>Observação</th></tr></thead>
+      <tbody>
+        {% for e in eventos %}
+        <tr>
+          <td class="texto-mudo">{{ e.criado_em }}</td>
+          <td><a href="{{ url_for('ordens_servico.detalhe', ordem_id=e.ordem_servico_id) }}">{{ e.os_numero }}</a></td>
+          <td class="texto-mudo">{{ status_labels.get(e.status_anterior, '—') }}</td>
+          <td><span class="badge badge-azul">{{ status_labels.get(e.status_novo, e.status_novo) }}</span></td>
+          <td>{{ e.usuario_nome or 'sistema' }}</td>
+          <td class="texto-mudo texto-pequeno">{{ e.observacao or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhum evento registrado ainda.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

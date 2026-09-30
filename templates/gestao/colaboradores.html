@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block titulo %}Colaboradores{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">👥 Colaboradores</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('gestao.novo_colaborador') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Novo</a>
+    <a href="{{ url_for('gestao.horas_trabalhadas') }}" class="nv-toolbar-btn"><span class="icone">⏱</span> Horas Trabalhadas</a>
+  </div>
+
+  {% if colaboradores %}
+  <div class="tabela-wrap">
+    <table class="nv-grid">
+      <thead><tr><th>Nome</th><th>Cargo</th><th>Unidade</th><th>Celular</th><th>Carga horária</th><th></th></tr></thead>
+      <tbody>
+        {% for c in colaboradores %}
+        <tr onclick="window.location='{{ url_for('gestao.editar_colaborador', colaborador_id=c.id) }}'">
+          <td><strong>{{ c.nome }}</strong></td>
+          <td class="texto-mudo">{{ c.funcao or '—' }}</td>
+          <td class="texto-mudo">{{ c.unidade_nome or '—' }}</td>
+          <td class="texto-mudo">{{ c.telefone or '—' }}</td>
+          <td class="texto-mudo">{{ c.carga_horaria_semanal or '—' }}{% if c.carga_horaria_semanal %}h/sem{% endif %}</td>
+          <td><a href="{{ url_for('gestao.editar_colaborador', colaborador_id=c.id) }}" class="btn btn-sm btn-secundario">Editar</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum colaborador cadastrado ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Total: {{ colaboradores|length }}</div>
+  </div>
+</div>
+
+{% endblock %}

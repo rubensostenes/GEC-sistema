@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>{{ titulo }}</h1>
+    <p class="subtitulo">{{ subtitulo }}</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo parâmetro</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="chave">Chave *</label>
+        <input type="text" id="chave" name="chave" required>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="valor">Valor</label>
+        <input type="text" id="valor" name="valor">
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao">
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="painel">
+    <h2>Cadastrados</h2>
+    {% if parametros %}
+    <ul class="lista-simples">
+      {% for p in parametros %}
+      <li style="display:flex; justify-content:space-between;">
+        <span>{{ p.chave }}{% if p.descricao %}<br><span class="texto-mudo texto-pequeno">{{ p.descricao }}</span>{% endif %}</span>
+        <strong>{{ p.valor or '—' }}</strong>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum parâmetro cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

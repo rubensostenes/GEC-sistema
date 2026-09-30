@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Configuração de Listagem{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Configuração de Listagem</h1>
+    <p class="subtitulo">Preferência de exibição para as tabelas do sistema</p>
+  </div>
+</div>
+
+<form method="post" class="painel" style="max-width:400px;">
+  <div class="campo">
+    <label for="itens_por_pagina">Itens por página</label>
+    <input type="number" id="itens_por_pagina" name="itens_por_pagina" min="10" value="{{ config.itens_por_pagina if config else 25 }}">
+  </div>
+  <div class="acoes-form">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+  </div>
+</form>
+
+{% endblock %}

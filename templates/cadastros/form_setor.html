@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if setor else 'Novo' }} Setor{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">🏢 {{ 'Editar Setor' if setor else 'Novo Setor' }} — {{ unidade.nome }}</div>
+</div>
+
+<form method="post" class="nv-form">
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Identificação</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label for="nome">Descrição</label>
+      <input type="text" id="nome" name="nome" required value="{{ setor.nome if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="codigo">Código</label>
+      <input type="text" id="codigo" name="codigo" value="{{ (setor.codigo or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="cor">Cor / identificação do polo</label>
+      <input type="text" id="cor" name="cor" value="{{ (setor.cor or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="responsavel_id">Responsável</label>
+      <select id="responsavel_id" name="responsavel_id">
+        <option value="">— Nenhum —</option>
+        {% for c in colaboradores %}
+        <option value="{{ c.id }}" {{ 'selected' if setor and setor.responsavel_id == c.id }}>{{ c.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label class="checkbox">
+        <input type="checkbox" name="eh_almoxarifado" {{ 'checked' if setor and setor.eh_almoxarifado }}>
+        Este setor é um almoxarifado
+      </label>
+    </div>
+    <div class="campo">
+      <label for="codigo_integracao">Código de integração</label>
+      <input type="text" id="codigo_integracao" name="codigo_integracao" value="{{ (setor.codigo_integracao or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="localizacao">Localização</label>
+      <input type="text" id="localizacao" name="localizacao" value="{{ (setor.localizacao or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="contato">Contato</label>
+      <input type="text" id="contato" name="contato" value="{{ (setor.contato or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone</label>
+      <input type="text" id="telefone" name="telefone" value="{{ (setor.telefone or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="ramal">Ramal</label>
+      <input type="text" id="ramal" name="ramal" value="{{ (setor.ramal or '') if setor else '' }}">
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Endereço</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="pais">País</label>
+      <input type="text" id="pais" name="pais" value="{{ (setor.pais or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="cep">CEP</label>
+      <input type="text" id="cep" name="cep" value="{{ (setor.cep or '') if setor else '' }}">
+    </div>
+    <div class="campo span-2">
+      <label for="logradouro">Logradouro</label>
+      <input type="text" id="logradouro" name="logradouro" value="{{ (setor.logradouro or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="numero">Número</label>
+      <input type="text" id="numero" name="numero" value="{{ (setor.numero or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="complemento">Complemento</label>
+      <input type="text" id="complemento" name="complemento" value="{{ (setor.complemento or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="bairro">Bairro</label>
+      <input type="text" id="bairro" name="bairro" value="{{ (setor.bairro or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="cidade">Cidade</label>
+      <input type="text" id="cidade" name="cidade" value="{{ (setor.cidade or '') if setor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="estado">Estado</label>
+      <input type="text" id="estado" name="estado" value="{{ (setor.estado or '') if setor else '' }}">
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Centro de custo</div>
+    {% if centros_custo_vinculados %}
+    <ul class="lista-simples">
+      {% for cc in centros_custo_vinculados %}
+      <li>{{ cc.centro_custo_nome }} — {{ cc.percentual }}%</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo">
+      <label for="centro_custo_id">Associar a centro de custo</label>
+      <select id="centro_custo_id" name="centro_custo_id">
+        <option value="">— Nenhum —</option>
+        {% for cc in centros_custo %}
+        <option value="{{ cc.id }}">{{ cc.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="percentual">Rateio (%)</label>
+      <input type="number" step="0.01" id="percentual" name="percentual" value="100">
+    </div>
+    <div class="campo span-2">
+      <span class="ajuda">Só é possível adicionar um novo vínculo por vez ao salvar.</span>
+    </div>
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Usuários liberados para abrir requisição neste setor</div>
+    <span class="ajuda">Deixe todos desmarcados para permitir qualquer usuário ativo.</span>
+  </div>
+  <div style="max-height:220px; overflow-y:auto; margin:6px 12px 10px; columns:2; background:#fff; padding:8px 12px; border:1px solid #dfe3e8;">
+    {% for u in usuarios %}
+    <label class="checkbox" style="display:block;">
+      <input type="checkbox" name="usuarios_liberados" value="{{ u.id }}" {{ 'checked' if usuarios_liberados_ids and u.id in usuarios_liberados_ids }}>
+      {{ u.nome }}
+    </label>
+    {% endfor %}
+  </div>
+
+  <div class="nv-form-secao">
+    <div class="nv-form-secao-titulo">Observação</div>
+  </div>
+  <div class="nv-form-grid">
+    <div class="campo span-2 alinhar-topo">
+      <label for="observacao">Observação</label>
+      <textarea id="observacao" name="observacao">{{ (setor.observacao or '') if setor else '' }}</textarea>
+    </div>
+  </div>
+
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar setor</button>
+    <a href="{{ url_for('cadastros.setores', unidade_id=unidade.id) }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

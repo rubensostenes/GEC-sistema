@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>GEC — Unidades (protótipo Firestore + Netlify)</title>
+<style>
+  body { font-family: Segoe UI, Arial, sans-serif; background: #eef1f5; margin: 0; padding: 24px; }
+  h1 { font-size: 1.1rem; color: #1f4e79; }
+  .aviso { background: #fff3cd; border: 1px solid #f0c36d; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; font-size: 0.85rem; }
+  table { border-collapse: collapse; width: 100%; max-width: 640px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e2e5ea; font-size: 0.9rem; }
+  th { background: #dce6f1; color: #1f4e79; }
+  form { margin-top: 16px; display: flex; gap: 8px; }
+  input { padding: 6px 8px; border: 1px solid #c9ced6; border-radius: 3px; }
+  button { background: #1f4e79; color: #fff; border: none; padding: 6px 14px; border-radius: 3px; cursor: pointer; }
+</style>
+</head>
+<body>
+  <h1>🏥 Unidades — protótipo Firestore + Netlify</h1>
+  <p class="aviso">Esta é uma tela isolada, só para comparar com a versão Flask/SQL do GEC. Não está ligada ao app principal.</p>
+
+  <table>
+    <thead><tr><th>Nome</th><th>Endereço</th></tr></thead>
+    <tbody id="linhas"><tr><td colspan="2">Carregando...</td></tr></tbody>
+  </table>
+
+  <form id="form-nova">
+    <input type="text" id="nome" placeholder="Nome da unidade" required>
+    <input type="text" id="endereco" placeholder="Endereço">
+    <button type="submit">Salvar</button>
+  </form>
+
+<script>
+async function carregar() {
+  const resp = await fetch("/.netlify/functions/unidades");
+  const unidades = await resp.json();
+  const corpo = document.getElementById("linhas");
+  corpo.innerHTML = unidades.length
+    ? unidades.map(u => `<tr><td>${u.nome}</td><td>${u.endereco || ""}</td></tr>`).join("")
+    : "<tr><td colspan=2>Nenhuma unidade cadastrada.</td></tr>";
+}
+
+document.getElementById("form-nova").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const nome = document.getElementById("nome").value;
+  const endereco = document.getElementById("endereco").value;
+  await fetch("/.netlify/functions/unidades", {
+    method: "POST",
+    body: JSON.stringify({ nome, endereco }),
+  });
+  document.getElementById("form-nova").reset();
+  carregar();
+});
+
+carregar();
+</script>
+</body>
+</html>

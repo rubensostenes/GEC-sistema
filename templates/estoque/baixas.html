@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block titulo %}Baixas Diversas{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📉 Baixas Diversas</div>
+
+  <div class="nv-toolbar">
+    <a href="{{ url_for('estoque.nova_baixa') }}" class="nv-toolbar-btn"><span class="icone">📄</span> Nova Baixa</a>
+  </div>
+
+  {% if baixas %}
+  <table class="nv-grid">
+    <thead><tr><th>Peça</th><th>Quantidade</th><th>Motivo</th><th>Data</th><th>Responsável</th></tr></thead>
+    <tbody>
+      {% for b in baixas %}
+      <tr>
+        <td>{{ b.peca_nome }}</td>
+        <td>{{ b.quantidade }} {{ b.unidade_medida }}</td>
+        <td class="texto-mudo">{{ b.motivo }}</td>
+        <td>{{ b.data_baixa }}</td>
+        <td class="texto-mudo">{{ b.responsavel_nome or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma baixa registrada ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ baixas|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

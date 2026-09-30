@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Inventários{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📊 Inventários</div>
+
+  <div class="nv-busca-painel" style="border-bottom:1px solid var(--cinza-200);">
+    <form method="post" action="{{ url_for('estoque.novo_inventario') }}" style="display:flex; gap:8px; flex-wrap:wrap; align-items:end;">
+      <div class="campo" style="flex:1; min-width:200px;">
+        <label>Descrição (opcional)</label>
+        <input type="text" name="descricao">
+      </div>
+      <button type="submit" class="btn btn-primario">Abrir inventário com a posição atual</button>
+    </form>
+  </div>
+
+  {% if inventarios %}
+  <table class="nv-grid">
+    <thead><tr><th>Descrição</th><th>Data</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for i in inventarios %}
+      <tr onclick="window.location='{{ url_for('estoque.detalhe_inventario', inventario_id=i.id) }}'">
+        <td>{{ i.descricao or ('Inventário #' ~ i.id) }}</td>
+        <td>{{ i.data_inventario }}</td>
+        <td><span class="badge badge-{{ 'verde' if i.status == 'fechado' else 'azul' }}">{{ i.status }}</span></td>
+        <td><a href="{{ url_for('estoque.detalhe_inventario', inventario_id=i.id) }}" class="btn btn-sm btn-secundario">Abrir</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum inventário realizado ainda.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ inventarios|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

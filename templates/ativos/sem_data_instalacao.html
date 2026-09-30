@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Equipamentos sem Data de Instalação{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Equipamentos sem Data de Instalação</h1>
+    <p class="subtitulo">Cadastros incompletos — informe a data de instalação na edição do equipamento</p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if equipamentos %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Equipamento</th><th>Patrimônio</th><th>Unidade</th><th>Data de aquisição</th><th></th></tr></thead>
+      <tbody>
+        {% for e in equipamentos %}
+        <tr>
+          <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=e.id) }}">{{ e.nome }}</a></td>
+          <td class="texto-mudo">{{ e.patrimonio or '—' }}</td>
+          <td class="texto-mudo">{{ e.unidade_nome or '—' }}</td>
+          <td class="texto-mudo">{{ e.data_aquisicao or '—' }}</td>
+          <td><a href="{{ url_for('equipamentos.editar', equipamento_id=e.id) }}" class="btn btn-sm btn-secundario">Completar cadastro</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Todos os equipamentos têm data de instalação preenchida.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

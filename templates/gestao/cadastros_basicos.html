@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block titulo %}Cadastros Básicos{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Cadastros Básicos</h1>
+    <p class="subtitulo">Atalhos para os cadastros de apoio do sistema</p>
+  </div>
+</div>
+
+<div class="grid-kpi" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+  <a href="{{ url_for('cadastros.unidades') }}" class="painel" style="display:block;">
+    <h3>Unidades</h3>
+    <p class="texto-mudo texto-pequeno">Filiais e polos atendidos.</p>
+  </a>
+  <a href="{{ url_for('gestao.setores') }}" class="painel" style="display:block;">
+    <h3>Setores</h3>
+    <p class="texto-mudo texto-pequeno">Setores/polos por unidade.</p>
+  </a>
+  <a href="{{ url_for('gestao.fornecedores') }}" class="painel" style="display:block;">
+    <h3>Fornecedores</h3>
+    <p class="texto-mudo texto-pequeno">Empresas prestadoras de serviço.</p>
+  </a>
+  <a href="{{ url_for('gestao.colaboradores') }}" class="painel" style="display:block;">
+    <h3>Colaboradores</h3>
+    <p class="texto-mudo texto-pequeno">Equipe técnica e de apoio.</p>
+  </a>
+  <a href="{{ url_for('cadastros.estoque') }}" class="painel" style="display:block;">
+    <h3>Peças / Estoque</h3>
+    <p class="texto-mudo texto-pequeno">Insumos e peças de reposição.</p>
+  </a>
+  {% if current_user.is_admin %}
+  <a href="{{ url_for('cadastros.usuarios') }}" class="painel" style="display:block;">
+    <h3>Usuários</h3>
+    <p class="texto-mudo texto-pequeno">Contas de acesso ao sistema.</p>
+  </a>
+  {% endif %}
+</div>
+
+{% endblock %}

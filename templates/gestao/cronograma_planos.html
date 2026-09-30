@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}Cronograma de Planos{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Cronograma de Execução dos Planos de Manutenção</h1>
+    <p class="subtitulo">Planos ativos, filtráveis</p>
+  </div>
+</div>
+
+<form method="get" class="linha-filtros">
+  <div class="campo">
+    <label>Plano</label>
+    <select name="plano_id">
+      <option value="">Todos</option>
+      {% for p in todos_planos %}
+      <option value="{{ p.id }}" {{ 'selected' if filtros.plano_id|string == p.id|string }}>{{ p.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="campo">
+    <label>Fornecedor</label>
+    <select name="fornecedor_id">
+      <option value="">Todos</option>
+      {% for f in fornecedores %}
+      <option value="{{ f.id }}" {{ 'selected' if filtros.fornecedor_id|string == f.id|string }}>{{ f.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="campo">
+    <label>Tipo</label>
+    <select name="tipo">
+      <option value="">Todos</option>
+      <option value="preventiva" {{ 'selected' if filtros.tipo == 'preventiva' }}>Preventiva</option>
+      <option value="calibracao" {{ 'selected' if filtros.tipo == 'calibracao' }}>Calibração</option>
+      <option value="inspecao" {{ 'selected' if filtros.tipo == 'inspecao' }}>Inspeção</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-secundario">Filtrar</button>
+</form>
+
+<div class="painel">
+  {% if planos %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Plano</th><th>Tipo</th><th>Periodicidade</th><th>Responsável</th><th>Fornecedor</th></tr></thead>
+      <tbody>
+        {% for p in planos %}
+        <tr>
+          <td><a href="{{ url_for('gestao.editar_plano_manutencao', plano_id=p.id) }}">{{ p.nome }}</a></td>
+          <td class="texto-mudo">{{ p.tipo_manutencao }}</td>
+          <td>a cada {{ p.periodicidade_meses }} meses</td>
+          <td class="texto-mudo">{{ p.responsavel_nome or '—' }}</td>
+          <td class="texto-mudo">{{ p.fornecedor_nome or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhum plano ativo encontrado com estes filtros.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

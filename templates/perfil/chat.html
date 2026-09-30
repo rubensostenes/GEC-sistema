@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}Chat Interno{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Chat Interno</h1>
+    <p class="subtitulo">Mural único da equipe — atualize a página para ver mensagens novas (sem tempo real por enquanto)</p>
+  </div>
+</div>
+
+<div class="painel" style="max-width:700px;">
+  <form method="post" style="display:flex; gap:8px; margin-bottom:16px;">
+    <input type="text" name="mensagem" placeholder="Escreva uma mensagem..." required style="flex:1;" autofocus>
+    <button type="submit" class="btn btn-primario">Enviar</button>
+  </form>
+
+  {% if mensagens %}
+  <ul class="lista-simples">
+    {% for m in mensagens %}
+    <li>
+      <strong>{{ m.usuario_nome or 'usuário removido' }}</strong>
+      <span class="texto-mudo texto-pequeno">— {{ m.criado_em }}</span><br>
+      {{ m.mensagem }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="vazio">Nenhuma mensagem ainda. Seja o primeiro a escrever!</p>
+  {% endif %}
+</div>
+
+{% endblock %}

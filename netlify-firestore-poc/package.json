@@ -1,0 +1,9 @@
+{
+  "name": "gec-firestore-poc",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Protótipo comparativo: tela de Unidades do GEC rodando em Firestore + Netlify Functions, para comparar com a versão Flask + SQL.",
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

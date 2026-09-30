@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Administrar Requisições de Serviço{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">📥 Administrar Requisições de Serviço</div>
+
+  {% if requisicoes %}
+  <table class="nv-grid">
+    <thead><tr><th>Número</th><th>Equipamento/Setor</th><th>Solicitante</th><th>Ocorrência</th><th>Prioridade</th><th>Abertura</th><th></th></tr></thead>
+    <tbody>
+      {% for r in requisicoes %}
+      <tr>
+        <td>{{ r.numero }}</td>
+        <td>{{ r.equipamento_nome or r.descricao_equipamento_setor or '—' }}</td>
+        <td class="texto-mudo">{{ r.solicitante_nome }}</td>
+        <td class="texto-mudo">{{ r.ocorrencia or '—' }}</td>
+        <td><span class="badge badge-{{ {'baixa':'cinza','media':'azul','alta':'laranja','critica':'vermelho'}[r.prioridade] }}">{{ r.prioridade }}</span></td>
+        <td class="texto-mudo">{{ r.data_abertura[:16] }}</td>
+        <td style="display:flex; gap:6px;">
+          <a href="{{ url_for('ordens_servico.abrir_os_requisicao', requisicao_id=r.id) }}" class="btn btn-sm btn-primario">Abrir OS</a>
+          <form method="post" action="{{ url_for('ordens_servico.negar_requisicao', requisicao_id=r.id) }}" onsubmit="return confirm('Negar esta requisição?');">
+            <button type="submit" class="btn btn-sm btn-perigo">Negar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhuma requisição pendente de análise.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>Exibindo {{ requisicoes|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

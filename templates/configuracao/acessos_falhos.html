@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}Acessos Falhos{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela">
+  <div class="nv-janela-titulo">⚠ Acessos Falhos</div>
+  <p class="texto-mudo texto-pequeno" style="padding:10px 14px 0;">Últimas 200 tentativas de login malsucedidas</p>
+
+  {% if acessos %}
+  <table class="nv-grid">
+    <thead><tr><th>Data/Hora</th><th>E-mail tentado</th><th>IP</th><th>Motivo</th></tr></thead>
+    <tbody>
+      {% for a in acessos %}
+      <tr>
+        <td class="texto-mudo">{{ a.criado_em }}</td>
+        <td>{{ a.email_tentativa }}</td>
+        <td class="texto-mudo">{{ a.ip or '—' }}</td>
+        <td><span class="badge badge-vermelho">{{ a.motivo }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio" style="padding:20px;">Nenhum acesso falho registrado.</p>
+  {% endif %}
+
+  <div class="nv-grid-rodape">
+    <div></div>
+    <div>{{ acessos|length }} registro(s)</div>
+  </div>
+</div>
+
+{% endblock %}

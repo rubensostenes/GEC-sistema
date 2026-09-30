@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titulo %}Custo de Substituição{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Custo de Substituição</h1>
+    <p class="subtitulo">Valor estimado de reposição do parque de equipamentos</p>
+  </div>
+</div>
+
+<div class="grid-kpi">
+  <div class="kpi">
+    <div class="valor">R$ {{ '%.2f'|format(total_reposicao) }}</div>
+    <div class="rotulo">Total estimado de reposição</div>
+  </div>
+  <div class="kpi atencao">
+    <div class="valor">{{ sem_valor }}</div>
+    <div class="rotulo">Equipamentos sem valor de reposição informado</div>
+  </div>
+</div>
+
+<div class="painel">
+  {% if equipamentos %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Equipamento</th><th>Unidade</th><th>Valor de aquisição</th><th>Valor de reposição</th></tr></thead>
+      <tbody>
+        {% for e in equipamentos %}
+        <tr>
+          <td><a href="{{ url_for('equipamentos.detalhe', equipamento_id=e.id) }}">{{ e.nome }}</a></td>
+          <td class="texto-mudo">{{ e.unidade_nome or '—' }}</td>
+          <td class="texto-mudo">{{ 'R$ %.2f'|format(e.valor_aquisicao) if e.valor_aquisicao else '—' }}</td>
+          <td><strong>R$ {{ '%.2f'|format(e.valor_reposicao) }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhum equipamento com valor de reposição informado ainda. Preencha o campo "Valor de reposição" na edição do equipamento.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

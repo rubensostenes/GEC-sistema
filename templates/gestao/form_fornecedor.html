@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if fornecedor else 'Novo' }} Fornecedor{% endblock %}
+{% block conteudo %}
+
+<div class="nv-janela" style="margin-bottom:12px;">
+  <div class="nv-janela-titulo">🏭 {{ 'Editar Fornecedor' if fornecedor else 'Novo Fornecedor' }}</div>
+</div>
+
+<form method="post" class="nv-form" style="max-width:720px;">
+  <div class="nv-form-grid">
+    <div class="campo span-2">
+      <label for="nome">Nome / Razão social</label>
+      <input type="text" id="nome" name="nome" required value="{{ fornecedor.nome if fornecedor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="cnpj">CNPJ</label>
+      <input type="text" id="cnpj" name="cnpj" value="{{ fornecedor.cnpj if fornecedor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="contato">Pessoa de contato</label>
+      <input type="text" id="contato" name="contato" value="{{ fornecedor.contato if fornecedor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone</label>
+      <input type="text" id="telefone" name="telefone" value="{{ fornecedor.telefone if fornecedor else '' }}">
+    </div>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" value="{{ fornecedor.email if fornecedor else '' }}">
+    </div>
+    <div class="campo span-2 alinhar-topo">
+      <label for="servicos_prestados">Serviços/produtos prestados</label>
+      <textarea id="servicos_prestados" name="servicos_prestados">{{ fornecedor.servicos_prestados if fornecedor else '' }}</textarea>
+    </div>
+  </div>
+  <div class="acoes-form" style="padding:10px 12px 0;">
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <a href="{{ url_for('gestao.fornecedores') }}" class="btn btn-secundario">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

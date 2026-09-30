@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}Centro de Custos/Lucros{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Centro de Custos/Lucros</h1>
+    <p class="subtitulo">Agrupamento de custos das ordens de serviço por centro</p>
+  </div>
+</div>
+
+<div class="grid-2col">
+  <div class="painel">
+    <h2>Novo centro</h2>
+    <form method="post">
+      <div class="campo">
+        <label for="nome">Nome *</label>
+        <input type="text" id="nome" name="nome" required>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" name="tipo">
+          <option value="custo">Custo</option>
+          <option value="lucro">Lucro</option>
+        </select>
+      </div>
+      <div class="campo" style="margin-top:10px;">
+        <label for="unidade_id">Unidade</label>
+        <select id="unidade_id" name="unidade_id">
+          <option value="">—</option>
+          {% for u in unidades %}
+          <option value="{{ u.id }}">{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="acoes-form">
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="nv-janela" style="margin-bottom:0;">
+    <div class="nv-janela-titulo">💰 Centros cadastrados</div>
+    {% if centros %}
+    <table class="nv-grid">
+      <thead><tr><th>Nome</th><th>Tipo</th><th>Total gasto</th></tr></thead>
+      <tbody>
+        {% for c in centros %}
+        <tr>
+          <td>{{ c.nome }}</td>
+          <td><span class="badge badge-{{ 'verde' if c.tipo == 'lucro' else 'azul' }}">{{ c.tipo }}</span></td>
+          <td>R$ {{ '%.2f'|format(c.total_gasto) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vazio" style="padding:20px;">Nenhum centro de custo cadastrado ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

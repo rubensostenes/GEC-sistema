@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Agenda da Equipe{% endblock %}
+{% block conteudo %}
+
+<div class="topo-pagina">
+  <div>
+    <h1>Agenda da Equipe</h1>
+    <p class="subtitulo">Ordens de serviço com data agendada, por técnico</p>
+  </div>
+</div>
+
+<div class="painel">
+  {% if ordens %}
+  <div class="tabela-wrap">
+    <table class="tabela">
+      <thead><tr><th>Data agendada</th><th>Técnico</th><th>OS</th><th>Equipamento</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for os in ordens %}
+        <tr>
+          <td><strong>{{ os.data_agendada }}</strong></td>
+          <td>{{ os.tecnico_nome or 'Não atribuído' }}</td>
+          <td><a href="{{ url_for('ordens_servico.detalhe', ordem_id=os.id) }}">{{ os.numero }}</a></td>
+          <td class="texto-mudo">{{ os.equipamento_nome or '—' }}</td>
+          <td><span class="badge badge-{{ {'aberta':'azul','em_andamento':'laranja','aguardando_peca':'laranja','concluida':'verde','cancelada':'cinza'}[os.status] }}">{{ status_labels[os.status] }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vazio">Nenhuma OS agendada no momento.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
