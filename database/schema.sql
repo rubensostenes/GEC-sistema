@@ -206,6 +206,18 @@ CREATE TABLE IF NOT EXISTS anexos (
     criado_em TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 
+-- ===================== ARMAZENAMENTO DE ARQUIVOS NO BANCO =====================
+-- Usado quando GEC_STORAGE_BACKEND=db (deploy serverless, ex.: Vercel, onde o
+-- filesystem é efêmero). Os caminhos continuam "uploads/<nome>", mas o conteúdo
+-- fica aqui e é servido pela rota /static/uploads/<nome> do app.
+CREATE TABLE IF NOT EXISTS arquivos_storage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL UNIQUE,
+    nome_original TEXT,
+    conteudo BLOB NOT NULL,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+);
+
 -- ===================== HISTÓRICO DE STATUS DA OS (auditoria/rastreio) =====================
 CREATE TABLE IF NOT EXISTS ordem_servico_historico (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

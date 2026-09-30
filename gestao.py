@@ -209,7 +209,7 @@ def exportar_planos_csv():
     db = get_db()
     linhas = db.execute(
         """SELECT pl.oficina, pl.nome, p.nome AS procedimento, pl.periodicidade_meses, pl.tipo_manutencao,
-                  pl.prioridade, CASE WHEN pl.ativo THEN 'Ativo' ELSE 'Inativo' END AS status
+                  pl.prioridade, CASE WHEN pl.ativo = 1 THEN 'Ativo' ELSE 'Inativo' END AS status
            FROM planos_manutencao pl LEFT JOIN procedimentos_manutencao p ON p.id = pl.procedimento_id
            ORDER BY pl.oficina, pl.nome"""
     ).fetchall()

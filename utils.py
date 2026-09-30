@@ -23,13 +23,27 @@ def salvar_arquivo(arquivo):
     nome_original = secure_filename(arquivo.filename)
     extensao = nome_original.rsplit(".", 1)[1].lower()
     nome_unico = f"{uuid.uuid4().hex}.{extensao}"
+    caminho_relativo = f"uploads/{nome_unico}"
+
+    if current_app.config.get("STORAGE_BACKEND") == "db":
+        # Guarda o conteúdo na tabela arquivos_storage (mesma transação da
+        # chamadora, que faz commit depois). A leitura é feita pela rota
+        # /static/uploads/<nome> registrada em app.py.
+        from db import get_db
+
+        db = get_db()
+        db.execute(
+            "INSERT INTO arquivos_storage (nome, nome_original, conteudo) VALUES (?, ?, ?)",
+            (nome_unico, nome_original, arquivo.read()),
+        )
+        return nome_original, caminho_relativo
 
     pasta = Path(current_app.config["UPLOAD_FOLDER"])
     pasta.mkdir(parents=True, exist_ok=True)
     caminho_completo = pasta / nome_unico
     arquivo.save(caminho_completo)
 
-    return nome_original, f"uploads/{nome_unico}"
+    return nome_original, caminho_relativo
 
 
 def gerar_numero_os(db):

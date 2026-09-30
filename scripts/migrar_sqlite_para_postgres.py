@@ -26,7 +26,7 @@ SQLITE_PATH = BASE_DIR / "database" / "gec.db"
 TABELAS = [
     "usuarios", "tokens_acesso", "unidades", "setores", "setor_centro_custo",
     "setor_usuarios_liberados", "equipamentos", "ordens_servico", "requisicoes_servico",
-    "pecas_estoque", "ordem_servico_pecas", "anexos", "ordem_servico_historico",
+    "pecas_estoque", "ordem_servico_pecas", "anexos", "arquivos_storage", "ordem_servico_historico",
     "fornecedores", "contratos_manutencao", "colaboradores", "apontamentos_horas",
     "manuais", "fabricantes", "modelos", "plano_descricoes", "reservas_equipamento",
     "transportes_equipamento", "contadores_equipamento", "solicitacoes_compra",

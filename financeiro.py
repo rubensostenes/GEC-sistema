@@ -28,7 +28,9 @@ def resumo():
            FROM ordens_servico os
            JOIN equipamentos e ON e.id = os.equipamento_id
            JOIN unidades u ON u.id = e.unidade_id
-           GROUP BY u.id HAVING total > 0 ORDER BY total DESC"""
+           GROUP BY u.id
+           HAVING COALESCE(SUM(os.custo_pecas + os.custo_mao_obra), 0) > 0
+           ORDER BY total DESC"""
     ).fetchall()
 
     maiores_custos = db.execute(

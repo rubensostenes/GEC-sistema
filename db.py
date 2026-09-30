@@ -12,6 +12,43 @@ if USANDO_POSTGRES:
     import psycopg2.extras
 
 
+_FMT_PG = {"Y": "YYYY", "m": "MM", "d": "DD", "H": "HH24", "M": "MI", "S": "SS"}
+
+
+def _fmt_pg(fmt_sqlite):
+    """Converte formato strftime do SQLite (%Y-%m-%d) pro do Postgres (YYYY-MM-DD)."""
+    return re.sub(r"%([YmdHS])", lambda m: _FMT_PG[m.group(1)], fmt_sqlite)
+
+
+def _traduzir_sql(sql):
+    sql = sql.replace("?", "%s")
+
+    def agora(fmt_pg):
+        return f"to_char(now() AT TIME ZONE 'America/Recife', '{fmt_pg}')"
+
+    # datetime('now', 'localtime') / datetime('now','localtime')
+    sql = re.sub(r"datetime\('now'\s*,\s*'localtime'\)", agora("YYYY-MM-DD HH24:MI:SS"), sql)
+    # date('now', 'localtime') com ou sem espaço
+    sql = re.sub(r"\bdate\('now'\s*,\s*'localtime'\)", agora("YYYY-MM-DD"), sql)
+    # time('now', 'localtime') com ou sem espaço
+    sql = re.sub(r"\btime\('now'\s*,\s*'localtime'\)", agora("HH24:MI:SS"), sql)
+    # strftime('%Y-%m','now','localtime') -> to_char(now() ...)
+    sql = re.sub(
+        r"strftime\('([^']+)'\s*,\s*'now'(?:\s*,\s*'localtime')?\)",
+        lambda m: agora(_fmt_pg(m.group(1))),
+        sql,
+    )
+    # strftime('%Y-%m', coluna) -> to_char(coluna, 'YYYY-MM')
+    # (::timestamp porque as datas ficam gravadas como TEXT, estilo SQLite;
+    # se já for date/timestamp o cast é inofensivo)
+    sql = re.sub(
+        r"strftime\('([^']+)'\s*,\s*([A-Za-z_][\w.]*)\)",
+        lambda m: f"to_char({m.group(2)}::timestamp, '{_fmt_pg(m.group(1))}')",
+        sql,
+    )
+    return sql
+
+
 class _CursorPostgres:
     """Faz um cursor do psycopg2 se comportar como um cursor do sqlite3.
 
@@ -27,9 +64,7 @@ class _CursorPostgres:
 
     @staticmethod
     def _traduzir(sql):
-        sql = sql.replace("?", "%s")
-        sql = sql.replace("datetime('now', 'localtime')", "to_char(now() AT TIME ZONE 'America/Recife', 'YYYY-MM-DD HH24:MI:SS')")
-        return sql
+        return _traduzir_sql(sql)
 
     def execute(self, sql, params=()):
         sql_traduzido = self._traduzir(sql)
@@ -209,9 +244,18 @@ def init_db(app):
     if USANDO_POSTGRES:
         db = _conectar()
         schema_path = str(Path(app.config["SCHEMA_PATH"]).parent / "schema_postgres.sql")
-        with open(schema_path, "r", encoding="utf-8") as f:
-            db.executescript(f.read())
-        _migrar_colunas(db)
+        ja_existe = db.execute(
+            "SELECT to_regclass('public.usuarios') AS tabela"
+        ).fetchone()["tabela"]
+        if ja_existe:
+            # Banco já criado em deploy anterior: pula o schema (evita rodar as
+            # ~150 declarações a cada cold start no serverless) e só aplica as
+            # colunas novas que forem surgindo.
+            _migrar_colunas(db)
+        else:
+            with open(schema_path, "r", encoding="utf-8") as f:
+                db.executescript(f.read())
+            _migrar_colunas(db)
         db.commit()
         db.close()
         return

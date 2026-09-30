@@ -1,23 +1,67 @@
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, Response, abort
 
 import db
 from auth import CARGO_LABELS, login_manager
 from config import Config
 
 
+def registrar_rota_uploads(app):
+    """Serve anexos gravados no banco (GEC_STORAGE_BACKEND=db) nas mesmas URLs
+    de quando ficavam em disco: /static/uploads/<nome>.
+
+    A rota é mais específica que a estática padrão do Flask, então o Werkzeug
+    a escolhe automaticamente para arquivos dentro de uploads/.
+    """
+    MIMES = {
+        "pdf": "application/pdf",
+        "png": "image/png",
+        "jpg": "image/jpeg",
+        "jpeg": "image/jpeg",
+        "webp": "image/webp",
+        "doc": "application/msword",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "xls": "application/vnd.ms-excel",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }
+
+    @app.route("/static/uploads/<nome>")
+    def arquivo_do_banco(nome):
+        if app.config["STORAGE_BACKEND"] != "db":
+            # Modo disco (local/docker): o nome continua chegando aqui porque a
+            # rota é mais específica que a estática padrão — servimos do disco.
+            from flask import send_from_directory
+
+            return send_from_directory(app.config["UPLOAD_FOLDER"], nome)
+        row = db.get_db().execute(
+            "SELECT nome_original, conteudo FROM arquivos_storage WHERE nome = ?", (nome,)
+        ).fetchone()
+        if row is None:
+            abort(404)
+        extensao = nome.rsplit(".", 1)[-1].lower() if "." in nome else ""
+        return Response(
+            bytes(row["conteudo"]),
+            mimetype=MIMES.get(extensao, "application/octet-stream"),
+            headers={"Cache-Control": "public, max-age=31536000, immutable"},
+        )
+
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
+    if app.config["STORAGE_BACKEND"] == "fs":
+        # Com backend=db (serverless) o filesystem é read-only; nada é gravado em disco.
+        Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
 
     db.init_app(app)
     # Roda sempre: cria o banco na primeira vez e garante que tabelas/colunas
     # novas do schema sejam adicionadas em bancos já existentes.
     with app.app_context():
         db.init_db(app)
+
+    registrar_rota_uploads(app)
 
     login_manager.init_app(app)
 

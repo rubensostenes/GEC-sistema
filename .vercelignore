@@ -1,0 +1,12 @@
+.git
+.venv
+.claude
+__pycache__
+*.pyc
+database/gec.db
+static/uploads/*
+!static/uploads/.gitkeep
+netlify-firestore-poc
+vercel-firestore-poc
+Dockerfile
+iniciar.bat
